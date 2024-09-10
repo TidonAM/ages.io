@@ -176,6 +176,64 @@
         </div>
 
         <script>
+            var xmlHttp = createXmlHttpObject();
+
+            function createXmlHttpObject() {
+                if(window.XMLHttpRequest) {
+                    xmlHttp = new XMLHttpRequest();
+                } else {
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                return xmlHttp;
+            }
+
+            function gateChangePosition() {
+                var xhttp = new XMLHttpRequest();
+                var message;
+                xhttp.open("PUT", "BUTTON_0", false);
+                xhttp.send();
+            }
+
+            // handles esp32 response
+            function response() {
+                var message;
+                var barwidth;
+                var currentSensor;
+                var xmlResponse;
+                var xmldoc;
+                var dt = new Date();
+                var color = "e8e8e8";
+
+                //get xml stream
+                xmlResponse = xmlHttp.responseXML;
+
+                // get date and time
+                document.getElementById("time").innerHTML = dt.toLocaleTimeString();
+                document.getElementById("date").innerHTML = dt.toLocaleTimeString();
+
+                //get SensorData (SD)
+                xmldoc = xmlResponse.getElementsByTagName("SD");
+                message = xmldoc[0].firstChild.nodeValue;
+
+                /* if (message > x) {
+                color = "hexcode";
+                } else {
+                color = "hexcode"; 
+                }
+                */
+                
+                barwidth = message / 40.95;
+                document.getElementById("b0").innerHTML=message;
+                document.getElementById("b0").style.width=(barwidth+"%");
+
+                xmldoc = xmlResponse.getElementsByTagName("B1");
+                message = xmldoc[0].firstChild.nodeValue;
+
+            }
+        </script>
+
+        <script>
+            
             const statusInfo = document.getElementById('status-info');
             const statusIcons = document.getElementById('status-icons');
             const changeViewButton = document.getElementById('changeViewButton');
@@ -221,6 +279,18 @@
                     clearTimeout(closeAlertTimeOut);
                 }
             });
+
+            function process(){
+                
+            if(xmlHttp.readyState==0 || xmlHttp.readyState==4) {
+                xmlHttp.open("PUT","xml",true);
+                xmlHttp.onreadystatechange=response;
+                xmlHttp.send(null);
+            }       
+                // you may have to play with this value, big pages need more porcessing time, and hence
+                // a longer timeout
+                setTimeout("process()",100);
+            }
 
 
             
