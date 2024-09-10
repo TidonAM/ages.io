@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGES</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <button class="burger">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+            </svg>
+        </button>
+        <div class="navbar-title">AGES</div>
+        <button class="profile">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+            </svg>
+        </button>
+    </div>
+    <!-- Main Container -->
+    <div class="container">
+        
+        <div class="image-box">
+            <img src="C:\Users\Jm\Desktop\AGES\img\hillcrest.jpg" alt="Gate Image">
+        </div>
+
+        <div class="driver-info">
+            <div class="info-row">
+                <div class="info-label">Last Detected Driver Details</div>
+            </div>
+            <div class="info-row2">
+                <div class="info-label">Name</div>
+                <div class="info-value">Dela Cruz, Juan</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Plate Number</div>
+                <div class="info-value">ABC123</div>
+            </div>
+            <div class="info-row3">
+                <div class="info-label">Entry Info</div>
+                <div class="info-value">hh:mm:ss | yyyy mm dd</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Street</div>
+                <div class="info-value">Molave Street</div>
+            </div>
+        </div>
+
+        <div id="alert-box" class="alert-box hidden">
+            <div class="alert-cont">
+                <div class="alert">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                    </svg>
+                    <p>Error!</p>
+                </div>
+                <button id="close-alert" class="close-alert">✕</button>
+            </div>
+            <div id="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+
+        <button id="changeViewButton" class="toggle-view">Change View</button>
+
+        <div id="status-info" class="status-info hidden">
+            <div class="info-row-top">
+                <div class="info-label">Gate Status</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Connection Status</div>
+                <div class="info-value">Online</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Position</div>
+                <div class="info-value">Open</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Obstacle Detection</div>
+                <div class="info-value">Blocked</div>
+
+            </div>
+            <div class="info-row2">
+                <div class="info-label">Board</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Temperature</div>
+                <div class="info-value">36°C</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">RFID Reader Status</div>
+                <div class="info-value">Online</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Obstacle Sensor Status</div>
+                <div class="info-value">Online</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Signal to Current Device</div>
+                <div class="info-value">50/100</div>
+            </div>
+            <div class="info-row2">
+                <div class="info-label">Board</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Camera</div>
+                <div class="info-value">Online</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Plate Detection Status</div>
+                <div class="info-value">ABC123</div>
+            </div>
+
+        </div>
+
+        <div id="status-icons" class="status-icons">
+            <div id="gate-connection" class="icon-box green icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed-fill" viewBox="0 0 16 16">
+                    <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+                </svg>
+                <div class="icon-label-online">Online</div>
+            </div>
+            <div id="gate-position" class="icon-box red icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+                </svg>
+                <div class="icon-label-open">Open</div>
+            </div>
+            <div id="gate-obstacle" class="icon-box red icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
+                </svg>
+                <div class="icon-label-obs">Obstructed</div>
+            </div>
+            <div id="rfid-connection" class="icon-box green icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                    <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
+                    <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
+                    <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"/>
+                    <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"/>
+                    <path d="M12 9h2V8h-2z"/>
+                </svg>
+                <div class="icon-label-scanner">Online</div>
+            </div>
+            <div id="camera-connection" class="icon-box green icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/>
+                </svg>
+                <div class="icon-label-camol">Camera Online</div>
+            </div>
+            <div id="board-temp" class="icon-box green icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
+                    <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
+                    <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1"/>
+                </svg>
+                <div class="icon-label-temp">Temperature</div>
+            </div>
+            <div id="board-signal" class="icon-box yellow icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
+                    <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
+                </svg>
+                <div class="icon-label-signal">Signal</div>
+            </div>
+            <div id="obstacle-connection" class="icon-box green icon-clickable">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-upc-scan" viewBox="0 0 16 16">
+                    <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/>
+                  </svg>
+                  <div class="icon-label-sensor">Online</div>
+            </div>
+        </div>
+
+        <script>
+            const statusInfo = document.getElementById('status-info');
+            const statusIcons = document.getElementById('status-icons');
+            const changeViewButton = document.getElementById('changeViewButton');
+            const iconBox  = document.getElementsByClassName('icon-box');
+            const alertBox = document.getElementById('alert-box');
+            const closeAlertButton = document.getElementById('close-alert');
+            let closeAlertTimeOut;
+        
+            changeViewButton.addEventListener('click', () => {
+            if (!statusInfo.classList.contains('hidden')) {
+                statusInfo.classList.add('hidden');
+                statusIcons.classList.remove('hidden');
+            } else {
+                statusInfo.classList.remove('hidden');
+                statusIcons.classList.add('hidden');
+            }
+            });
+
+            Array.from(iconBox).forEach(element => {
+                element.addEventListener('click', () => {
+                    const ButtonId = element.id;
+                    console.log(`Clicked element ID: ${ButtonId}`);
+                    if (alertBox.classList.contains('hidden')) {
+                        alertBox.classList.remove('hidden');
+
+                        const progressBar = document.getElementById('progress-bar');
+                        progressBar.style.width = '0%';
+
+                        setTimeout(() => {
+                            progressBar.style.width = '100%';
+                        }, 10); 
+
+                        // closeAlertTimeOut = setTimeout(() => {
+                        //     alertBox.classList.add('hidden');
+                        // }, 5000);
+                    }
+                });
+            });
+
+            closeAlertButton.addEventListener('click', () => {
+                if (!alertBox.classList.contains('hidden')) {
+                    alertBox.classList.add('hidden');
+                    clearTimeout(closeAlertTimeOut);
+                }
+            });
+
+
+            
+        </script>
+
+
+    </div>
+</body>
+</html>
