@@ -1,24 +1,28 @@
 #include <WiFi.h>
 #include <WebServer.h>
-#include "SuperMon.h"
+#include "index.h"
 
-// #define USE_INTRANET
+// #define USE_OTHER_WIFI
 
-#define LOCAL_SSID "car"
-#define LOCAL_PASS "111"
+#define LOCAL_SSID "...."
+#define LOCAL_PASS "...."
 
 #define AP_SSID "ESP32Website"
-#define AP_PASS "espesp"
+#define AP_PASS "espespespesp"
 
-#define PIN_MOTOR 26
+#define PIN_MOTOR 4
 #define PIN_LED 2
-
-// variables to store sensor data
+#define PIN_TEMP 14
+#define PIN_DIST 15
+#define PIN_FAN 13
 
 int SensorDistance = 0;
 int MotorRotate = 0;
+int Temperature = 0;
+int FanRPM = 0;
+int FanSpeed = 0;
 uint32_t SensorUpdate = 0;
-bool LED = 0;
+bool LED0 = 0;
 
 char XML[2048];
 
@@ -26,27 +30,42 @@ char buf[32];
 
 IPAddress Actual_IP;
 
-IPAddress PageIP (192, 168, 1, 1);
-IPAddress gateway (192, 168, 1, 1);
-IPAddress subnet (255, 255, 255, 0);
+IPAddress PageIP(192, 168, 1, 1);
+IPAddress gateway(192, 168, 1, 1);
+IPAddress subnet(255, 255, 255, 0);
 IPAddress ip;
 
 WebServer server(80);
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
-  pinMode(PIN_LED, OUTPUT);
-  pinMode(PIN_MOTOR, OUTPUT); 
+  Serial.begin(115200);
 
-  LED = false;
+  pinMode(PIN_LED, OUTPUT); 
+  pinMode(PIN_MOTOR, OUTPUT);
+  pinMode(PIN_DIST, INPUT);
+  pinMode(PIN_TEMP, INPUT);
+  pinMode(PIN_FAN, OUTPUT);
+
+  LED0 = false;
+  int SensorDistance = 0;
+  int MotorRotate = 0;
+  int Temperature = 0;
+  int FanRPM = 0;
   digitalWrite(PIN_LED, LED0);
+  digitalWrite(PIN_MOTOR, MotorRotate);
 
-  disableCore1WDT();
+  //FAN RPM
+  // ledcSetup(0, 10000, 8);
+  // ledcAttachPin(PIN_FAN, 0);
+  // ledcWrite(0, FanSpeed);
+
+  // disableCore0WDT();
+  // disableCore1WDT();
 
   Serial.println("Starting Wifi Server"); 
 
-  #ifdef USE_INTRANET
+  #ifdef USE_OTHER_WIFI
     WiFi.begin(LOCAL_SSID, LOCAL_PASS);
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
@@ -56,25 +75,21 @@ void setup() {
     Actual_IP = WiFi.localIP();
   #endif
 
-    printWifiStatus();
+  #ifndef USE_OTHER_WIFI
+    WiFi.softAP(AP_SSID, AP_PASS);
+    delay(100);
+    WiFi.softAPConfig(PageIP, gateway, subnet);
+    delay(100);
+    Actual_IP = WiFi.softAPIP();
+    Serial.print("IP address: "); Serial.println(Actual_IP);
+    Serial.print("SSID: "); Serial.println(AP_SSID);
+    Serial.print("PASSWORD: "); Serial.println(AP_PASS);
+  #endif
 
-  // these calls will handle data coming back from your web page
-  // this one is a page request, upon ESP getting / string the web page will be sent
+  printWifiStatus();
+
   server.on("/", SendWebsite);
-
-  // upon esp getting /XML string, ESP will build and send the XML, this is how we refresh
-  // just parts of the web page
   server.on("/xml", SendXML);
-
-  // upon ESP getting /UPDATE_SLIDER string, ESP will execute the UpdateSlider function
-  // same notion for the following .on calls
-  // add as many as you need to process incoming strings from your web page
-  // as you can imagine you will need to code some javascript in your web page to send such strings
-  // this process will be documented in the SuperMon.h web page code
-  server.on("/UPDATE_SLIDER", UpdateSlider);
-  server.on("/BUTTON_0", ProcessButton_0);
-  // server.on("/BUTTON_1", ProcessButton_1);
-
   server.begin();
 
 }
@@ -82,16 +97,38 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if ((millis() - SensorUpdate) >= 50) {
-    //Serial.println("Reading Sensors");
     SensorUpdate = millis();
-    SensorDistance = analogRead(PIN_A0);
-
+    SensorDistance = digitalRead(PIN_DIST);
+    Temperature = digitalRead(PIN_TEMP);
+    // Serial.print("SD");
+    // Serial.println(SensorDistance);
+    // Serial.print("T");
+    // Serial.println(Temperature);
   }
 
-  // no matter what you must call this handleClient repeatidly--otherwise the web page
-  // will not get instructions to do something
   server.handleClient();
 }
+
+// void UpdateSlider() {
+
+//   // many I hate strings, but wifi lib uses them...
+//   String t_state = server.arg("VALUE");
+
+//   // conver the string sent from the web page to an int
+//   FanSpeed = t_state.toInt();
+//   Serial.print("UpdateSlider"); Serial.println(FanSpeed);
+//   // now set the PWM duty cycle
+//   ledcWrite(0, FanSpeed);
+
+//   FanRPM = map(FanSpeed, 0, 255, 0, 2400);
+//   strcpy(buf, "");
+//   sprintf(buf, "%d", FanRPM);
+//   sprintf(buf, buf);
+
+//   // now send it back
+//   server.send(200, "text/plain", buf); //Send web page
+
+// }
 
 void ProcessButton_0() {
 
@@ -123,22 +160,18 @@ void SendWebsite() {
 
 }
 
-// code to send the main web page
-// I avoid string data types at all cost hence all the char mainipulation code
-
-// same notion for processing button_1
-
 void SendXML() {
-
-  // Serial.println("sending xml");
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
   sprintf(buf, "<SD>%d</SD>\n", SensorDistance);
   strcat(XML, buf);
-  // send Volts0
-  sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
+
+  sprintf(buf, "<T>%d</T>\n", Temperature);
   strcat(XML, buf);
+  // send Volts0
+  // sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
+  // strcat(XML, buf);
 
   // send bits1
   // sprintf(buf, "<B1>%d</B1>\n", BitsA1);
@@ -148,26 +181,18 @@ void SendXML() {
   // sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
   // strcat(XML, buf);
 
-  // show led0 status
-  if (LED0) {
-    strcat(XML, "<LED>1</LED>\n");
-  }
-  else {
-    strcat(XML, "<LED>0</LED>\n");
-  }
-
-  if (SomeOutput) {
-    strcat(XML, "<SWITCH>1</SWITCH>\n");
-  }
-  else {
-    strcat(XML, "<SWITCH>0</SWITCH>\n");
-  }
+  // if (LED0) {
+  //   strcat(XML, "<LED>1</LED>\n");
+  // }
+  // else {
+  //   strcat(XML, "<LED>0</LED>\n");
+  // }
 
   strcat(XML, "</Data>\n");
   // wanna see what the XML code looks like?
   // actually print it to the serial monitor and use some text editor to get the size
   // then pad and adjust char XML[2048]; above
-  Serial.println(XML);
+  // Serial.println(XML);
 
   // you may have to play with this value, big pages need more porcessing time, and hence
   // a longer timeout that 200 ms
