@@ -1,20 +1,33 @@
 #include <WiFi.h>
 #include <WebServer.h>
+
+//index html page
 #include "index.h"
+
+//Temperature
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+//servo
+#include <ESP32Servo.h>
+Servo mainServo;
 
 // #define USE_OTHER_WIFI
 
-#define LOCAL_SSID "...."
-#define LOCAL_PASS "...."
+#define LOCAL_SSID "..."
+#define LOCAL_PASS "..."
 
 #define AP_SSID "ESP32Website"
 #define AP_PASS "espespespesp"
 
-#define PIN_MOTOR 4
+#define PIN_MOTOR 25
 #define PIN_LED 2
-#define PIN_TEMP 14
-#define PIN_DIST 15
+#define PIN_TEMP 33
+#define PIN_DIST 32
 #define PIN_FAN 13
+
+OneWire oneWire(PIN_TEMP);
+DallasTemperature sensors(&oneWire);
 
 int SensorDistance = 0;
 int MotorRotate = 0;
@@ -22,6 +35,7 @@ int Temperature = 0;
 int FanRPM = 0;
 int FanSpeed = 0;
 uint32_t SensorUpdate = 0;
+uint32_t MotorUpdate = 0;
 bool LED0 = 0;
 
 char XML[2048];
@@ -53,7 +67,12 @@ void setup() {
   int Temperature = 0;
   int FanRPM = 0;
   digitalWrite(PIN_LED, LED0);
-  digitalWrite(PIN_MOTOR, MotorRotate);
+  // digitalWrite(PIN_MOTOR, MotorRotate);
+  mainServo.attach(PIN_MOTOR);
+  mainServo.write(180);
+  delay(1000);
+
+  sensors.begin();
 
   //FAN RPM
   // ledcSetup(0, 10000, 8);
@@ -90,6 +109,7 @@ void setup() {
 
   server.on("/", SendWebsite);
   server.on("/xml", SendXML);
+  server.on("/gateposition", ProcessGatePosition);
   server.begin();
 
 }
@@ -98,37 +118,50 @@ void loop() {
   // put your main code here, to run repeatedly:
   if ((millis() - SensorUpdate) >= 50) {
     SensorUpdate = millis();
-    SensorDistance = digitalRead(PIN_DIST);
-    Temperature = digitalRead(PIN_TEMP);
+    SensorDistance = analogRead(PIN_DIST);
+    sensors.requestTemperatures();
+    // Temperature = analogRead(PIN_TEMP);
+    Temperature = sensors.getTempCByIndex(0);
+    MotorRotate = mainServo.read() + 2;
+    // Serial.println(MotorRotate);
     // Serial.print("SD");
     // Serial.println(SensorDistance);
     // Serial.print("T");
     // Serial.println(Temperature);
   }
 
+    // mainServo.write(0);
+    // Serial.println(mainServo.read());
+    // delay(2000);
+    // mainServo.write(180);
+    // Serial.println(mainServo.read());
+    // delay(2000);
+
   server.handleClient();
 }
 
-// void UpdateSlider() {
+void ProcessGatePosition() {
 
-//   // many I hate strings, but wifi lib uses them...
-//   String t_state = server.arg("VALUE");
+  String gateStatus;
 
-//   // conver the string sent from the web page to an int
-//   FanSpeed = t_state.toInt();
-//   Serial.print("UpdateSlider"); Serial.println(FanSpeed);
-//   // now set the PWM duty cycle
-//   ledcWrite(0, FanSpeed);
+  if (MotorRotate == 1) {
+    mainServo.write(180);
+    delay(1000);
+    Serial.print("Gate Closed");
+    gateStatus = "0";
+  } else if (MotorRotate == 180) {
+    mainServo.write(0);
+    delay(1000);
+    Serial.print("Gate Opened");
+    gateStatus = "1";
+  } else {
+    Serial.print("Gate is Rotating");
+    gateStatus = "2";
+  }
 
-//   FanRPM = map(FanSpeed, 0, 255, 0, 2400);
-//   strcpy(buf, "");
-//   sprintf(buf, "%d", FanRPM);
-//   sprintf(buf, buf);
+  server.send(200, "text/plain", gateStatus); //Send web page
 
-//   // now send it back
-//   server.send(200, "text/plain", buf); //Send web page
-
-// }
+}
 
 void ProcessButton_0() {
 
@@ -169,33 +202,17 @@ void SendXML() {
 
   sprintf(buf, "<T>%d</T>\n", Temperature);
   strcat(XML, buf);
-  // send Volts0
-  // sprintf(buf, "<V0>%d.%d</V0>\n", (int) (VoltsA0), abs((int) (VoltsA0 * 10)  - ((int) (VoltsA0) * 10)));
-  // strcat(XML, buf);
 
-  // send bits1
-  // sprintf(buf, "<B1>%d</B1>\n", BitsA1);
-  // strcat(XML, buf);
-  
-  // send Volts1
-  // sprintf(buf, "<V1>%d.%d</V1>\n", (int) (VoltsA1), abs((int) (VoltsA1 * 10)  - ((int) (VoltsA1) * 10)));
-  // strcat(XML, buf);
-
-  // if (LED0) {
-  //   strcat(XML, "<LED>1</LED>\n");
-  // }
-  // else {
-  //   strcat(XML, "<LED>0</LED>\n");
-  // }
+  if (MotorRotate == 1) {
+    strcat(XML, "<GPOS>0</GPOS>\n");
+  } else if (MotorRotate == 180) {
+    strcat(XML, "<GPOS>1</GPOS>\n");
+  } else {
+    strcat(XML, "<GPOS>2</GPOS>\n");
+  }
 
   strcat(XML, "</Data>\n");
-  // wanna see what the XML code looks like?
-  // actually print it to the serial monitor and use some text editor to get the size
-  // then pad and adjust char XML[2048]; above
-  // Serial.println(XML);
 
-  // you may have to play with this value, big pages need more porcessing time, and hence
-  // a longer timeout that 200 ms
   server.send(200, "text/xml", XML);
 
 }

@@ -263,7 +263,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             text-align: center;
         }
 
-        .icon-label-open{
+        .icon-label-gate{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
@@ -343,6 +343,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 </head>
 <body onload="process()">
     <!-- Navbar -->
+    <!--
     <div class="navbar">
         <button class="burger">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
@@ -357,6 +358,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </svg>
         </button>
     </div>
+    -->
     <!-- Main Container -->
     <div class="container">
         
@@ -418,7 +420,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <div class="info-row">
                 <div class="info-label">Obstacle Detection</div>
                 <div class="info-value">Blocked</div>
-
             </div>
             <div class="info-row2">
                 <div class="info-label">Board</div>
@@ -450,11 +451,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 <div class="info-label">Plate Detection Status</div>
                 <div class="info-value">ABC123</div>
             </div>
-
         </div>
 
         <div id="status-icons" class="status-icons">
-            <div id="gate-connection" class="icon-box green icon-clickable">
+            <div id="gate-connection" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed-fill" viewBox="0 0 16 16">
                     <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
                 </svg>
@@ -464,16 +464,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
                     <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
                 </svg>
-                <div class="icon-label-open">Open</div>
+                <div id="icon-label-gate" class="icon-label-gate">Open</div>
             </div>
-            <div id="gate-obstacle" class="icon-box red icon-clickable">
+            <div id="gate-obstacle" class="icon-box red">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                     <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
                 </svg>
                 <div id="icon-label-obs" class="icon-label-obs">Obstructed</div>
             </div>
-            <div id="rfid-connection" class="icon-box green icon-clickable">
+            <div id="rfid-connection" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
                     <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
                     <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
@@ -483,33 +483,32 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 </svg>
                 <div class="icon-label-scanner">Online</div>
             </div>
-            <div id="camera-connection" class="icon-box green icon-clickable">
+            <div id="camera-connection" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/>
                 </svg>
                 <div class="icon-label-camol">Camera Online</div>
             </div>
-            <div id="board-temp" class="icon-box green icon-clickable">
+            <div id="board-temp" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
                     <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
                     <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1"/>
                 </svg>
                 <div id="icon-label-temp" class="icon-label-temp">Temperature</div>
             </div>
-            <div id="board-signal" class="icon-box yellow icon-clickable">
+            <div id="board-signal" class="icon-box yellow">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
                     <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
                 </svg>
                 <div class="icon-label-signal">Signal</div>
             </div>
-            <div id="obstacle-connection" class="icon-box green icon-clickable">
+            <div id="obstacle-connection" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-upc-scan" viewBox="0 0 16 16">
                     <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/>
                 </svg>
                 <div class="icon-label-sensor">Online</div>
             </div>
         </div>
-
     </div>
 </body>
 
@@ -525,10 +524,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         return xmlHttp;
     }
 
-    function gateChangePosition() {
+    function gateChangePosition(value) {
         var xhttp = new XMLHttpRequest();
         var message;
-        xhttp.open("PUT", "BUTTON_0", false);
+        xhttp.open("PUT", "gateposition", value);
         xhttp.send();
     }
 
@@ -556,6 +555,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
             document.getElementById("icon-label-temp").innerHTML = message;
 
+            xmldoc = xmlResponse.getElementsByTagName("GPOS");
+            message = xmldoc[0].firstChild.nodeValue;
+
+            if (message == "0") {
+                document.getElementById("icon-label-gate").innerHTML = "Closed";
+            } else if (message == "1") {
+                document.getElementById("icon-label-gate").innerHTML = "Open";
+            } else if (message == "2") {
+                document.getElementById("icon-label-gate").innerHTML = "Rotating";
+            }
+
         }
 
     }
@@ -569,7 +579,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         setTimeout("process()",1000);
     }
 
-
 </script>
 
 <script>
@@ -577,9 +586,10 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     const statusInfo = document.getElementById('status-info');
     const statusIcons = document.getElementById('status-icons');
     const changeViewButton = document.getElementById('changeViewButton');
-    const iconBox  = document.getElementsByClassName('icon-box');
+    const iconBox  = document.getElementsByClassName('icon-clickable');
     const alertBox = document.getElementById('alert-box');
     const closeAlertButton = document.getElementById('close-alert');
+    const gatePositionText = document.getElementById('icon-label-gate').textContent;
     let closeAlertTimeOut;
 
     changeViewButton.addEventListener('click', () => {
@@ -596,6 +606,20 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         element.addEventListener('click', () => {
             const ButtonId = element.id;
             console.log(`Clicked element ID: ${ButtonId}`);
+
+            if (ButtonId == "gate-position") {
+                console.log(`gate-position: ` + gatePositionText);
+                if (gatePositionText == "Open") {
+                    console.log(`gateposition is open: ` + gatePositionText);
+                    processGatePosition("1");
+                } else if (gatePositionText == "Closed") {
+                    console.log(`gateposition is close: ` + gatePositionText);
+                    processGatePosition("0");
+                }
+                
+            }
+
+            //alerted
             if (alertBox.classList.contains('hidden')) {
                 alertBox.classList.remove('hidden');
 
@@ -619,9 +643,18 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             clearTimeout(closeAlertTimeOut);
         }
     });
+
+    function processGatePosition(value) {
+        var xhttp = new XMLHttpRequest();
+        var message;
+        xhttp.open("PUT", "gateposition", value);
+        xhttp.send();
+    }
 </script>
 
 </html>
+
+
 
 
 
