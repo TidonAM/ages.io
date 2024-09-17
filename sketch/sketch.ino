@@ -1,42 +1,58 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
+#include "NewPing.h"
+
 //index html page
 #include "index.h"
-
-//Temperature
-#include <OneWire.h>
-#include <DallasTemperature.h>
+#include "logs.h"
 
 //servo
 #include <ESP32Servo.h>
 Servo mainServo;
 
-// #define USE_OTHER_WIFI
+#define USE_OTHER_WIFI
 
-#define LOCAL_SSID "..."
-#define LOCAL_PASS "..."
+#define LOCAL_SSID ""
+#define LOCAL_PASS ""
 
 #define AP_SSID "ESP32Website"
 #define AP_PASS "espespespesp"
 
 #define PIN_MOTOR 25
+#define GATE_OPEN 90
+#define GATE_OPEN_VAR 1
+#define GATE_CLOSE 0
+#define ROTATION_INTERVAL 10
+#define MOTOR_STEP 5
+
 #define PIN_LED 2
 #define PIN_TEMP 33
-#define PIN_DIST 32
+// #define PIN_DIST 32
 #define PIN_FAN 13
 
-OneWire oneWire(PIN_TEMP);
-DallasTemperature sensors(&oneWire);
+#define DIST_MIN 10
+#define DIST_MAX 100
+#define PIN_DIST_E 26
+#define PIN_DIST_T 27
+
+//distance
+NewPing sonar(PIN_DIST_T, PIN_DIST_E, DIST_MAX);
 
 int SensorDistance = 0;
-int MotorRotate = 0;
+int MotorRotate = -1;
+String gateStatus = "0";
+int GateStatus = 0;
+int MotorAngle = 0;
+bool movingToClose = false;
 int Temperature = 0;
 int FanRPM = 0;
 int FanSpeed = 0;
 uint32_t SensorUpdate = 0;
 uint32_t MotorUpdate = 0;
+unsigned long lastServoMoveTime = 0;
 bool LED0 = 0;
+bool loopClose = false;
 
 char XML[2048];
 
@@ -57,27 +73,17 @@ void setup() {
 
   pinMode(PIN_LED, OUTPUT); 
   pinMode(PIN_MOTOR, OUTPUT);
-  pinMode(PIN_DIST, INPUT);
   pinMode(PIN_TEMP, INPUT);
   pinMode(PIN_FAN, OUTPUT);
 
   LED0 = false;
   int SensorDistance = 0;
-  int MotorRotate = 0;
   int Temperature = 0;
   int FanRPM = 0;
   digitalWrite(PIN_LED, LED0);
-  // digitalWrite(PIN_MOTOR, MotorRotate);
   mainServo.attach(PIN_MOTOR);
-  mainServo.write(180);
-  delay(1000);
-
-  sensors.begin();
-
-  //FAN RPM
-  // ledcSetup(0, 10000, 8);
-  // ledcAttachPin(PIN_FAN, 0);
-  // ledcWrite(0, FanSpeed);
+  mainServo.write(GATE_CLOSE);
+  gateStatus = "0";
 
   // disableCore0WDT();
   // disableCore1WDT();
@@ -108,6 +114,8 @@ void setup() {
   printWifiStatus();
 
   server.on("/", SendWebsite);
+  server.on("/logs", SendLogs);
+
   server.on("/xml", SendXML);
   server.on("/gateposition", ProcessGatePosition);
   server.begin();
@@ -118,45 +126,109 @@ void loop() {
   // put your main code here, to run repeatedly:
   if ((millis() - SensorUpdate) >= 50) {
     SensorUpdate = millis();
-    SensorDistance = analogRead(PIN_DIST);
-    sensors.requestTemperatures();
-    // Temperature = analogRead(PIN_TEMP);
-    Temperature = sensors.getTempCByIndex(0);
-    MotorRotate = mainServo.read() + 2;
+    if (sonar.ping_cm() != 0) {
+      SensorDistance = sonar.ping_cm();
+    }
+    Temperature = temperatureRead();
+    // Serial.print("mainservoread");
+    // Serial.println(mainServo.read());
+    // Serial.print("motorrotate");
     // Serial.println(MotorRotate);
+    // Serial.print("gateclose");
+    // Serial.println(GATE_CLOSE-1);
+    // MotorRotate = mainServo.read() + 2;
+    // Serial.print(MotorRotate);
     // Serial.print("SD");
     // Serial.println(SensorDistance);
     // Serial.print("T");
     // Serial.println(Temperature);
   }
-
-    // mainServo.write(0);
-    // Serial.println(mainServo.read());
-    // delay(2000);
-    // mainServo.write(180);
-    // Serial.println(mainServo.read());
-    // delay(2000);
-
+  GateClosing();
   server.handleClient();
+}
+
+void GateClosing() {
+  if ((millis() - lastServoMoveTime >= ROTATION_INTERVAL)) {
+    lastServoMoveTime = millis();
+    
+    if (loopClose == true) {
+      // Step the servo towards GATE_CLOSE
+      if (MotorRotate > GATE_CLOSE-1) {
+        MotorRotate -= MOTOR_STEP;  // Adjust this step size as needed
+        mainServo.write(MotorRotate);
+        movingToClose = true;
+        Serial.println("Gate closing");
+      } else {
+        gateStatus = "0";
+        loopClose = false;
+        movingToClose = false;  // Servo has reached the closed position
+        Serial.println("Gate closed");
+      }
+      
+      // If distance is below the minimum, stop and reverse
+      if (SensorDistance < DIST_MIN && movingToClose) {
+        MotorRotate = GATE_OPEN-1;
+        mainServo.write(GATE_OPEN);
+        movingToClose = true;
+        gateStatus = "1";
+        Serial.println("Gate disrupted");
+      }
+    }
+
+  }
 }
 
 void ProcessGatePosition() {
 
-  String gateStatus;
+  Serial.println(MotorRotate);
+  Serial.println(gateStatus);
+  Serial.println(mainServo.read());
 
-  if (MotorRotate == 1) {
-    mainServo.write(180);
-    delay(1000);
-    Serial.print("Gate Closed");
-    gateStatus = "0";
-  } else if (MotorRotate == 180) {
-    mainServo.write(0);
-    delay(1000);
-    Serial.print("Gate Opened");
+  if (gateStatus == "0") {
+    mainServo.write(GATE_OPEN);  // Move servo to 0 when touched
+    MotorRotate = GATE_OPEN-1;
+    movingToClose = false;
     gateStatus = "1";
+    Serial.println("Gate opened");
+    loopClose = false;
   } else {
-    Serial.print("Gate is Rotating");
-    gateStatus = "2";
+
+    loopClose = true;
+    // // If the gate should be closing
+    // if ((millis() - lastServoMoveTime >= ROTATION_INTERVAL)) {
+    //   lastServoMoveTime = millis();
+      
+    //   // Step the servo towards GATE_CLOSE
+    //   if (MotorRotate > GATE_CLOSE-1) {
+    //     MotorRotate -= MOTOR_STEP;  // Adjust this step size as needed
+    //     mainServo.write(MotorRotate);
+    //     movingToClose = true;
+    //     gateStatus = "2";
+    //     Serial.println("Gate closing");
+    //   } else {
+    //     gateStatus = "0";
+    //     movingToClose = false;  // Servo has reached the closed position
+    //     Serial.println("Gate closed");
+    //   }
+      
+    //   // If distance is below the minimum, stop and reverse
+    //   if (SensorDistance < DIST_MIN && movingToClose) {
+    //     MotorRotate = GATE_OPEN-1;
+    //     mainServo.write(GATE_OPEN);
+    //     movingToClose = true;
+    //     gateStatus = "2";
+    //     Serial.println("Gate disrupted");
+    //   }
+    // }
+
+    // // Move back to 0 if sensor distance is below DIST_MIN
+    // if (SensorDistance < DIST_MIN && movingToClose) {
+    //   MotorRotate = GATE_OPEN-1;
+    //   mainServo.write(GATE_OPEN);
+    //   movingToClose = false;
+    //   gateStatus = "1";
+    //   Serial.print("Gate disrupted");
+    // }
   }
 
   server.send(200, "text/plain", gateStatus); //Send web page
@@ -193,6 +265,12 @@ void SendWebsite() {
 
 }
 
+void SendLogs() {
+  Serial.println("sending web page");
+  //TRY ADJUSTING 200MS
+  server.send(200, "text/html", PAGE_LOGS);
+}
+
 void SendXML() {
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
@@ -203,9 +281,10 @@ void SendXML() {
   sprintf(buf, "<T>%d</T>\n", Temperature);
   strcat(XML, buf);
 
-  if (MotorRotate == 1) {
+  //if open, value must me closed
+  if (gateStatus == "0") {
     strcat(XML, "<GPOS>0</GPOS>\n");
-  } else if (MotorRotate == 180) {
+  } else if (gateStatus == "1") {
     strcat(XML, "<GPOS>1</GPOS>\n");
   } else {
     strcat(XML, "<GPOS>2</GPOS>\n");
