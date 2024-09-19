@@ -1,14 +1,14 @@
 const char PAGE_MAIN[] PROGMEM = R"=====(
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> <!-- For Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> <!-- For Firestore -->
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         body {
@@ -434,7 +434,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </div>
             <div class="info-row">
                 <div class="info-label">Position</div>
-                <div id="info-label-gate" class="info-value">Open</div>
+                <div id="info-label-gate" class="info-value">Closed</div>
             </div>
             <div class="info-row">
                 <div class="info-label">Obstacle Detection</div>
@@ -483,7 +483,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
                     <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
                 </svg>
-                <div id="icon-label-gate" class="icon-label-gate">Open</div>
+                <div id="icon-label-gate" class="icon-label-gate">Closed</div>
             </div>
             <div id="gate-obstacle" class="icon-box red">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
@@ -594,6 +594,24 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 document.getElementById("gate-position").classList.remove("red");
                 document.getElementById("gate-position").classList.remove("yellow");
                 document.getElementById("icon-label-gate").innerHTML = "Closed";
+
+                xmldoc = xmlResponse.getElementsByTagName("RFID");
+                message = xmldoc[0].firstChild.nodeValue;
+                if (message!=null) {
+                    console.log(message);
+                    checkRFID(message).then(isFound => {
+                        if (isFound) {
+                            processGatePosition("1");
+                        } else {
+                            console.log("RFID UID is not in the database.");
+                        }
+                    });
+                    // if (message == " 53 49 43 34") {
+                    //     processGatePosition("1");
+                    // }
+                }
+
+
             } else if (message == "1") {
                 document.getElementById("gate-position").classList.add("red");
                 document.getElementById("gate-position").classList.remove("green");
@@ -605,9 +623,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 document.getElementById("gate-position").classList.remove("red");
                 document.getElementById("icon-label-gate").innerHTML = "Rotating";
             }
-
         }
-
     }
 
     function process(){
@@ -619,13 +635,67 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         setTimeout("process()",1000);
     }
 
+    // function processGatePosition(value) {
+    //     var xhttp = new XMLHttpRequest();
+    //     var message;
+    //     xhttp.open("PUT", "gateposition", value);
+    //     xhttp.send();
+    // }
+
     function processGatePosition(value) {
         var xhttp = new XMLHttpRequest();
-        var message;
-        xhttp.open("PUT", "gateposition", value);
+        xhttp.open("PUT", "/gateposition?position=" + value, true);  // Send value as a query parameter
         xhttp.send();
     }
 
+</script>
+
+
+<script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
+            authDomain: "ages-cd6bc.firebaseapp.com",
+            projectId: "ages-cd6bc",
+            storageBucket: "ages-cd6bc.appspot.com",
+            messagingSenderId: "800033951916",
+            appId: "1:800033951916:web:9c97b66c162577998b0f09",
+            measurementId: "G-2F3CSHCZZ7"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const database = firebase.database();
+
+        async function fetchReferenceData(ref) {
+            const doc = await ref.get();
+            return doc.exists ? doc.data() : {};
+        }
+
+        async function checkRFID(rfidUID) {
+            try {
+                const trimmedRfidUID = rfidUID.trim();
+                console.log("RFIDUID detected is: "+rfidUID);
+
+                // Reference to the vehicle collection
+                const vehicleRef = collection(db, "vehicle");
+
+                // Query to find the document where uid field matches rfidUID
+                const q = query(vehicleRef, where("uid", "==", rfidUID));
+
+                // Execute the query
+                const querySnapshot = await getDocs(q);
+
+                // Check if any document matches the query
+                if (querySnapshot.empty) {
+                    console.log("No matching documents.");
+                    return false;
+                } else {
+                    console.log("Document found!");
+                    return true;
+                }
+            } catch (error) {
+                console.error("Error checking RFID in database:", error);
+            }
+        }
 </script>
 
 <script>
@@ -635,7 +705,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     const iconBox  = document.getElementsByClassName('icon-clickable');
     const alertBox = document.getElementById('alert-box');
     const closeAlertButton = document.getElementById('close-alert');
-    const gatePositionText = document.getElementById('icon-label-gate').textContent;
     let closeAlertTimeOut;
 
     changeViewButton.addEventListener('click', () => {
@@ -650,16 +719,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
     Array.from(iconBox).forEach(element => {
         element.addEventListener('click', () => {
+            let gatePositionText = document.getElementById('icon-label-gate').textContent;
             const ButtonId = element.id;
             console.log(`Clicked element ID: ${ButtonId}`);
             if (ButtonId == "gate-position") {
                 console.log(`gate-position: ` + gatePositionText);
-                if (gatePositionText == "Open") {
-                    console.log(`gateposition is open: ` + gatePositionText);
-                    processGatePosition("1");
-                } else if (gatePositionText == "Closed") {
-                    console.log(`gateposition is close: ` + gatePositionText);
-                    processGatePosition("0");
+                if (gatePositionText.toUpperCase() === "OPEN") {
+                    console.log(`Requesting gate to close.`);
+                    processGatePosition("0");  // Command to close the gate
+                } else if (gatePositionText.toUpperCase() === "CLOSED") {
+                    console.log(`Requesting gate to open.`);
+                    processGatePosition("1");  // Command to open the gate
                 }
                 
             }
@@ -690,6 +760,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 </script>
 
 </html>
+
 
 
 

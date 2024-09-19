@@ -69,7 +69,7 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 
             for (const doc of querySnapshot.docs) {
                 const data = doc.data();
-
+                
                 const vehicleData = await fetchReferenceData(data.vehicle);
                 console.log(vehicleData);
                 const residentData = await fetchReferenceData(vehicleData.owner);
@@ -115,7 +115,5 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 
 </body>
 </html>
-
-
 
 )=====";

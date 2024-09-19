@@ -11,7 +11,17 @@
 #include <ESP32Servo.h>
 Servo mainServo;
 
+//tempo rfid
+#include <MFRC522v2.h>
+#include <MFRC522DriverSPI.h>
+#include <MFRC522DriverPinSimple.h>
+#include <MFRC522Debug.h>
+MFRC522DriverPinSimple ss_pin(5);
+MFRC522DriverSPI driver{ss_pin};
+MFRC522 mfrc522{driver};
+
 #define USE_OTHER_WIFI
+// #define USE_BOTH_WIFI_AP
 
 #define LOCAL_SSID ""
 #define LOCAL_PASS ""
@@ -24,7 +34,7 @@ Servo mainServo;
 #define GATE_OPEN_VAR 1
 #define GATE_CLOSE 0
 #define ROTATION_INTERVAL 10
-#define MOTOR_STEP 5
+#define MOTOR_STEP 10
 
 #define PIN_LED 2
 #define PIN_TEMP 33
@@ -53,6 +63,8 @@ uint32_t MotorUpdate = 0;
 unsigned long lastServoMoveTime = 0;
 bool LED0 = 0;
 bool loopClose = false;
+bool rfidDone = false;
+String rfidUID = "";
 
 char XML[2048];
 
@@ -60,7 +72,7 @@ char buf[32];
 
 IPAddress Actual_IP;
 
-IPAddress PageIP(192, 168, 1, 1);
+IPAddress PageIP(192, 168, 1, 87);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress ip;
@@ -84,6 +96,10 @@ void setup() {
   mainServo.attach(PIN_MOTOR);
   mainServo.write(GATE_CLOSE);
   gateStatus = "0";
+  // while (!Serial);     // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4).
+  mfrc522.PCD_Init();  // Init MFRC522 board.
+  MFRC522Debug::PCD_DumpVersionToSerial(mfrc522, Serial);	// Show details of PCD - MFRC522 Card Reader details.
+	Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
 
   // disableCore0WDT();
   // disableCore1WDT();
@@ -92,6 +108,9 @@ void setup() {
 
   #ifdef USE_OTHER_WIFI
     WiFi.begin(LOCAL_SSID, LOCAL_PASS);
+    // if (!WiFi.config(PageIP, gateway, subnet)) {
+    //   Serial.println("STA Failed to configure");
+    // }
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       Serial.print(".");
@@ -130,21 +149,36 @@ void loop() {
       SensorDistance = sonar.ping_cm();
     }
     Temperature = temperatureRead();
-    // Serial.print("mainservoread");
-    // Serial.println(mainServo.read());
-    // Serial.print("motorrotate");
-    // Serial.println(MotorRotate);
-    // Serial.print("gateclose");
-    // Serial.println(GATE_CLOSE-1);
-    // MotorRotate = mainServo.read() + 2;
-    // Serial.print(MotorRotate);
-    // Serial.print("SD");
-    // Serial.println(SensorDistance);
-    // Serial.print("T");
-    // Serial.println(Temperature);
   }
   GateClosing();
+  rfidRead();
+
   server.handleClient();
+}
+
+void rfidRead() {
+  rfidUID = "";
+  rfidDone = false;
+  if ( !mfrc522.PICC_IsNewCardPresent()) {
+		return;
+	}
+	// Select one of the cards.
+	if ( !mfrc522.PICC_ReadCardSerial()) {
+		return;
+	}
+  byte letter;
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    // Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+    // Serial.print(mfrc522.uid.uidByte[i], HEX);
+    rfidUID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+    rfidUID.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
+  rfidUID.toUpperCase();
+  rfidDone = true;
+  delay(1000);
+  // Serial.print(F(": Card UID:"));
+  // MFRC522Debug::PrintUID(Serial, mfrc522.uid);
+  // Serial.println();
 }
 
 void GateClosing() {
@@ -179,56 +213,31 @@ void GateClosing() {
 }
 
 void ProcessGatePosition() {
+  String positionValue;
 
   Serial.println(MotorRotate);
   Serial.println(gateStatus);
   Serial.println(mainServo.read());
 
-  if (gateStatus == "0") {
-    mainServo.write(GATE_OPEN);  // Move servo to 0 when touched
-    MotorRotate = GATE_OPEN-1;
-    movingToClose = false;
-    gateStatus = "1";
-    Serial.println("Gate opened");
-    loopClose = false;
-  } else {
-
-    loopClose = true;
-    // // If the gate should be closing
-    // if ((millis() - lastServoMoveTime >= ROTATION_INTERVAL)) {
-    //   lastServoMoveTime = millis();
-      
-    //   // Step the servo towards GATE_CLOSE
-    //   if (MotorRotate > GATE_CLOSE-1) {
-    //     MotorRotate -= MOTOR_STEP;  // Adjust this step size as needed
-    //     mainServo.write(MotorRotate);
-    //     movingToClose = true;
-    //     gateStatus = "2";
-    //     Serial.println("Gate closing");
-    //   } else {
-    //     gateStatus = "0";
-    //     movingToClose = false;  // Servo has reached the closed position
-    //     Serial.println("Gate closed");
-    //   }
-      
-    //   // If distance is below the minimum, stop and reverse
-    //   if (SensorDistance < DIST_MIN && movingToClose) {
-    //     MotorRotate = GATE_OPEN-1;
-    //     mainServo.write(GATE_OPEN);
-    //     movingToClose = true;
-    //     gateStatus = "2";
-    //     Serial.println("Gate disrupted");
-    //   }
-    // }
-
-    // // Move back to 0 if sensor distance is below DIST_MIN
-    // if (SensorDistance < DIST_MIN && movingToClose) {
-    //   MotorRotate = GATE_OPEN-1;
-    //   mainServo.write(GATE_OPEN);
-    //   movingToClose = false;
-    //   gateStatus = "1";
-    //   Serial.print("Gate disrupted");
-    // }
+  if (server.hasArg("position")) {
+    positionValue = server.arg("position");  // Get the value of 'position'
+    Serial.print("Received position value: ");
+    Serial.println(positionValue);
+    if (positionValue == "1" && gateStatus == "0") {
+      mainServo.write(GATE_OPEN);  // Move servo to 0 when touched
+      MotorRotate = GATE_OPEN-1;
+      movingToClose = false;
+      gateStatus = "1";
+      loopClose = false;
+      Serial.println("Gate opened");
+    } else if (positionValue == "0" && gateStatus == "1") {
+        // Close the gate
+        loopClose = true;
+    } else {
+      Serial.println("unknown pos and gate");
+      Serial.println(positionValue);
+      Serial.println(gateStatus);
+    }
   }
 
   server.send(200, "text/plain", gateStatus); //Send web page
@@ -242,18 +251,6 @@ void ProcessButton_0() {
   Serial.print("Button 0 "); Serial.println(LED0);
 
   server.send(200, "text/plain", ""); //Send web page
-
-  // option 2 -- keep page live AND send a status
-  // if you want to send feed back immediataly
-  // note you must have reading code in the java script
-  /*
-    if (LED0) {
-    server.send(200, "text/plain", "1"); //Send web page
-    }
-    else {
-    server.send(200, "text/plain", "0"); //Send web page
-    }
-  */
 
 }
 
@@ -280,6 +277,23 @@ void SendXML() {
 
   sprintf(buf, "<T>%d</T>\n", Temperature);
   strcat(XML, buf);
+
+  Serial.print("rfid:");
+  Serial.println(rfidUID);
+
+  if (rfidDone) {
+  // Ensure the RFID UID is not empty
+    if (rfidUID.length() > 0) {
+      sprintf(buf, "<RFID>%s</RFID>\n", rfidUID.c_str());  // Use %s for strings and c_str() to convert String to C-style string
+      strcat(XML, buf);  // Append RFID data to XML
+    } else {
+      sprintf(buf, "<RFID/>\n");  // Empty RFID tag if UID is empty
+      strcat(XML, buf);
+    }
+  } else {
+    sprintf(buf, "<RFID/>\n");  // Empty RFID tag if rfidDone is false
+    strcat(XML, buf);
+  }
 
   //if open, value must me closed
   if (gateStatus == "0") {
