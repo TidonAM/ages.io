@@ -6,6 +6,7 @@
 //index html page
 #include "index.h"
 #include "logs.h"
+#include "resident.h"
 
 //servo
 #include <ESP32Servo.h>
@@ -34,7 +35,7 @@ MFRC522 mfrc522{driver};
 #define GATE_OPEN_VAR 1
 #define GATE_CLOSE 0
 #define ROTATION_INTERVAL 10
-#define MOTOR_STEP 10
+#define MOTOR_STEP 5
 
 #define PIN_LED 2
 #define PIN_TEMP 33
@@ -130,10 +131,13 @@ void setup() {
     Serial.print("PASSWORD: "); Serial.println(AP_PASS);
   #endif
 
+  WiFi.setSleep(false);
+
   printWifiStatus();
 
   server.on("/", SendWebsite);
   server.on("/logs", SendLogs);
+  server.on("/resident", SendRes);
 
   server.on("/xml", SendXML);
   server.on("/gateposition", ProcessGatePosition);
@@ -156,29 +160,41 @@ void loop() {
   server.handleClient();
 }
 
+unsigned long rfidMillis = 0;
+const long interval = 500;
+
 void rfidRead() {
-  rfidUID = "";
-  rfidDone = false;
-  if ( !mfrc522.PICC_IsNewCardPresent()) {
-		return;
-	}
-	// Select one of the cards.
-	if ( !mfrc522.PICC_ReadCardSerial()) {
-		return;
-	}
-  byte letter;
-  for (byte i = 0; i < mfrc522.uid.size; i++) {
-    // Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    // Serial.print(mfrc522.uid.uidByte[i], HEX);
-    rfidUID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-    rfidUID.concat(String(mfrc522.uid.uidByte[i], HEX));
+  if (loopClose == false) {
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - rfidMillis >= interval) {
+      rfidMillis = currentMillis;
+      Serial.println("rfid reading:");
+      rfidUID = "";
+      rfidDone = false;
+      if ( !mfrc522.PICC_IsNewCardPresent()) {
+        return;
+      }
+      // Select one of the cards.
+      if ( !mfrc522.PICC_ReadCardSerial()) {
+        return;
+      }
+      byte letter;
+      for (byte i = 0; i < mfrc522.uid.size; i++) {
+        // Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+        // Serial.print(mfrc522.uid.uidByte[i], HEX);
+        rfidUID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+        rfidUID.concat(String(mfrc522.uid.uidByte[i], HEX));
+      }
+      rfidUID.toUpperCase();
+      rfidDone = true;
+
+    }
+
+    // Serial.print(F(": Card UID:"));
+    // MFRC522Debug::PrintUID(Serial, mfrc522.uid);
+    // Serial.println();
   }
-  rfidUID.toUpperCase();
-  rfidDone = true;
-  delay(1000);
-  // Serial.print(F(": Card UID:"));
-  // MFRC522Debug::PrintUID(Serial, mfrc522.uid);
-  // Serial.println();
 }
 
 void GateClosing() {
@@ -268,7 +284,14 @@ void SendLogs() {
   server.send(200, "text/html", PAGE_LOGS);
 }
 
+void SendRes() {
+  Serial.println("sending resident");
+  server.send(200, "text/html", PAGE_RES);
+}
+
 void SendXML() {
+
+  Serial.println("sendXML:");
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
@@ -278,11 +301,10 @@ void SendXML() {
   sprintf(buf, "<T>%d</T>\n", Temperature);
   strcat(XML, buf);
 
-  Serial.print("rfid:");
-  Serial.println(rfidUID);
-
   if (rfidDone) {
   // Ensure the RFID UID is not empty
+    Serial.print("rfid:");
+    Serial.println(rfidUID);
     if (rfidUID.length() > 0) {
       sprintf(buf, "<RFID>%s</RFID>\n", rfidUID.c_str());  // Use %s for strings and c_str() to convert String to C-style string
       strcat(XML, buf);  // Append RFID data to XML
