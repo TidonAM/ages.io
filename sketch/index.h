@@ -422,7 +422,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs'">View Logs</button>
 
-        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/resident'">Manage Residents</button>
+        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle'">Manage Vehicles</button>
+
+        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident'">Manage Residents</button>
 
         <button id="changeViewButton" class="toggle-view">Change View</button>
 
@@ -560,11 +562,13 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 document.getElementById("gate-obstacle").classList.add("green");
                 document.getElementById("gate-obstacle").classList.remove("red");
                 document.getElementById("icon-label-obs").innerHTML = "Clear";
+                document.getElementById("info-label-obs").innerHTML = "Clear";
                 changeSVG(svg_obsOpen, "svgGateObstacle", "gate-obstacle");
             } else {
                 document.getElementById("gate-obstacle").classList.add("red");
                 document.getElementById("gate-obstacle").classList.remove("green");
                 document.getElementById("icon-label-obs").innerHTML = "Blocked";
+                document.getElementById("info-label-obs").innerHTML = "Blocked";
                 changeSVG(svg_obsClose, "svgGateObstacle", "gate-obstacle");
             }
 
@@ -574,6 +578,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             message = xmldoc[0].firstChild.nodeValue;
 
             document.getElementById("icon-label-temp").innerHTML = message+"°C";
+            document.getElementById("info-label-temp").innerHTML = message+"°C";
             document.getElementById("board-temp");
 
             xmldoc = xmlResponse.getElementsByTagName("GPOS");
@@ -586,6 +591,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 document.getElementById("gate-position").classList.remove("red");
                 document.getElementById("gate-position").classList.remove("yellow");
                 document.getElementById("icon-label-gate").innerHTML = "Closed";
+                document.getElementById("info-label-gate").innerHTML = "Closed";
                 changeSVG(svg_gateClose, "svgGatePosition", "gate-position");
 
                 xmldoc = xmlResponse.getElementsByTagName("RFID");
@@ -623,12 +629,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 document.getElementById("gate-position").classList.remove("green");
                 document.getElementById("gate-position").classList.remove("yellow");
                 document.getElementById("icon-label-gate").innerHTML = "Open";
+                document.getElementById("info-label-gate").innerHTML = "Open";
                 changeSVG(svg_gateOpen, "svgGatePosition", "gate-position");
             } else if (message == "2") {
                 document.getElementById("gate-position").classList.add("yellow");
                 document.getElementById("gate-position").classList.remove("green");
                 document.getElementById("gate-position").classList.remove("red");
                 document.getElementById("icon-label-gate").innerHTML = "Rotating";
+                document.getElementById("info-label-gate").innerHTML = "Rotating";
                 changeSVG(svg_gateOpen, "svgGatePosition", "gate-position");
             }
         }
@@ -671,18 +679,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             return doc.exists ? doc.data() : {};
         }
 
-        // function changeSVG(path, oldsvgId, divId) {
-        //     const DIV = document.getElementById(divId); 
-        //     const oldSVG = document.getElementById(oldsvgId);
-        //     const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        //     newSVG.setAttribute("width", "30");
-        //     newSVG.setAttribute("height", "30");
-        //     newSVG.setAttribute("fill", "currentColor");
-        //     newSVG.setAttribute("viewBox", "0 0 16 16");
-        //     newSVG.innerHTML = path;
-        //     DIV.replaceChild(newSVG, oldSVG);
-        // }
-
         function changeSVG(path, oldsvgId, divId) {
             const oldsvg = document.getElementById(oldsvgId);
             oldsvg.innerHTML = path;
@@ -715,6 +711,51 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             return doc.exists ? doc.data() : {};
         }
 
+        getLastDetectedDriver();
+
+        async function getLastDetectedDriver() {
+            const querySnapshot = await db.collection("History")
+                .orderBy("datetime", "desc")  // Order by datetime in descending order
+                .limit(1)  // Get the most recent entry
+                .get();
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];  // Get the first document
+                const data = doc.data();
+
+                // Fetch vehicle and resident data
+                const vehicleData = await fetchReferenceData(data.vehicle);
+                const residentData = await fetchReferenceData(vehicleData.owner);
+
+                let accessStatus = data.entry ? 'Entry' : 'Exit';
+
+                const lastname = residentData.lastName || 'N/A';  
+                const firstname = residentData.firstName || 'N/A'; 
+                const datetime = formatTimestamp(data.datetime) || 'N/A'; 
+                const plate = data.licensePlate || 'N/A';  
+                const street = residentData.street || 'N/A';  
+
+                getDriverDetails(lastname, firstname, datetime, plate, street);
+
+                console.log(lastDetectedDriverInfo);
+            } else {
+                console.log("No history found.");
+            }
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'N/A';
+            
+            const date = timestamp.toDate();
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
         async function checkRFID(rfidUID) {
             try {
                 const trimmedRfidUID = String(rfidUID).trim();;

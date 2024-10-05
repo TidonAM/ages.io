@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Residents</title>
     <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid orange; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
@@ -159,7 +172,7 @@
             <input class="dateInput" type="text" id="searchBar" placeholder="Search" />
         </div>
 
-        <select title="" name="dropdown" id="dropdown">
+        <select title="filterSelect" name="dropdown" id="dropdown">
             <option value="lastName">Last Name</option>
             <option value="firstName">First Name</option>
             <option value="middleName">Middle Name</option>
@@ -188,6 +201,13 @@
 </div>
 
 <script>
+    function isLoading(a) {
+        if (a === true) {
+            return '<tr><td colspan="6"><div style="display: flex; justify-content: center; width: 80%; padding: 10%;"><div class="loader" id="loader" style="height:120px;"></div></div></td></tr>';
+        } else {
+            return '';
+        }
+    }
     const firebaseConfig = {
         apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
         authDomain: "ages-cd6bc.firebaseapp.com",
@@ -210,10 +230,12 @@
 
     async function readDataFromFirestore() {
         const outputDiv = document.getElementById('output');
-        outputDiv.innerHTML = '';  // Clear current data
+        outputDiv.innerHTML = isLoading(true);
 
         const querySnapshot = await db.collection("Residents").get();
 
+        outputDiv.innerHTML = isLoading(false);
+        
         for (const doc of querySnapshot.docs) {
             const data = doc.data();
             
@@ -242,13 +264,12 @@
         }
     }
 
-    
-
     function search() {
+        const outputDiv = document.getElementById('output');
         const dropdownValue = document.getElementById('dropdown').value;
         const searchBarValue = document.getElementById('searchBar').value;
-        console.log(dropdownValue);
-        console.log(searchBarValue);
+        outputDiv.innerHTML = isLoading(true);
+
         if (searchBarValue != null) {
             db.collection("Residents")
             .where(dropdownValue, ">=", searchBarValue)
@@ -256,7 +277,7 @@
             .get()
             .then((querySnapshot) => {
                 const outputDiv = document.getElementById('output');
-                outputDiv.innerHTML = '';
+                outputDiv.innerHTML = isLoading(false);
                 querySnapshot.forEach(async (doc) => {
                     const data = doc.data();
 

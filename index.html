@@ -4,11 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> <!-- For Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> <!-- For Firestore -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>  -->
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
+        .resident input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 60%;
+        }
+        .date-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top:10px;
+        }
+
+        .search-bar label {
+            font-size: 16px;
+            color: #555;
+            /* margin-right: 10px; */
+        }
+        .date-container {
+            display: flex;
+            width: 100%;
+            align-items: center;
+        }
+        h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            border-bottom: 1px solid #d0d0d0;
+            padding-bottom: 5px;
+        }
+        /* Vehicle Row Styling */
+        .vehicle-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .vehicle-row .info {
+            flex-basis: 48%;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -375,10 +425,11 @@
     </div>
     -->
     <!-- Main Container -->
-    <div class="container">
+    <div class="container main" id="container-main">
         
         <div class="image-box">
             <img src="hillcrest.webp" alt="Gate Image">
+            <!-- <iframe src="http://192.168.1.54" width="100%" height="600" id="myIframe" frameborder="0" allowfullscreen></iframe> -->
         </div>
 
         <div class="driver-info">
@@ -418,11 +469,24 @@
             </div>
         </div>
 
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs'">View Logs</button>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">View Logs</button>
 
-        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle'">Manage Vehicles</button>
+        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle.html'">Manage Vehicles</button>
 
-        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident'">Manage Residents</button>
+        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident.html'">Manage Residents</button>
+
+        <!-- <div style="display: flex; gap: 10px;">
+            <select title="addToDBSelect" name="dropdown" id="dropdown">
+                <option value="" selected disabled>Add Vehicle or Resident</option>
+                <option value="resident">Add Resident</option>
+                <option value="vehicle">Add Vehicle</option>
+            </select>
+            <button id="addToDBButton" style="width: 20%;" class="toggle-view" onclick="window.location.href='/resident.html'">Add</button>
+        </div> -->
+        <div style="display: flex; justify-content: space-between;">
+            <button id="addResident" style="width: 48%;" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
+            <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
+        </div>
 
         <button id="changeViewButton" class="toggle-view">Change View</button>
 
@@ -526,6 +590,86 @@
                 <div class="icon-label-sensor">Online</div>
             </div> -->
         </div>
+    </div>
+
+    <div class="container modal resident" id="container-addresident" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Add Resident</h2>
+            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+        </div>
+        
+        <div class="info-row">
+            <label for="modal-addr-last-name">Last name:</label>
+            <input type="text" id="modal-addr-last-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-first-name">First name:</label>
+            <input type="text" id="modal-addr-first-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-middle-initial">Middle Initial:</label>
+            <input type="text" id="modal-addr-middle-initial" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-street">Street:</label>
+            <input type="text" id="modal-addr-street" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-block">Block:</label>
+            <input type="text" id="modal-addr-block" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-lot">Lot:</label>
+            <input type="text" id="modal-addr-lot" class="info"></input>
+        </div>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">Add Resident</button>
+    </div>
+
+    <div class="container modal vehicle" id="container-addvehicle" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Add Vehicle</h2>
+            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+        </div>
+        <div class="search-bar">
+            <!-- From Date Section -->
+            <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
+                <label for="fromDate"></label>
+                <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
+                <button class="toggle-view" onclick="modalOpen('main')" style="margin-bottom: 0px !important; height: 100%;">Search</button>
+            </div>
+            
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="resident">Resident:</label>
+            <select id="resident" style="padding: 10px; width: 50%;font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+                <option value="na">N/A</option>
+            </select>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="resident">License Plate:</label>
+            <input type="text" style="padding: 10px; width: 50%;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
+            </input>
+        </div>
+        <div class="vehicle-row" style="margin-bottom: 10px;">
+            <div class="info"  style="display: flex; flex-direction: column; gap: 10px;">
+                <label for="vehicle-type">Vehicle Type:</label>
+                <select id="vehicle-type" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Sedan">Sedan</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Truck">Truck</option>
+                </select>
+            </div>
+            <div class="info" style="display: flex; flex-direction: column; gap: 10px;">
+                <label for="vehicle-brand">Vehicle Brand:</label>
+                <select id="vehicle-brand" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Toyota">Toyota</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Ford">Ford</option>
+                </select>
+            </div>
+        </div>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">Add Vehicle</button>
+
     </div>
 </body>
 
@@ -655,6 +799,25 @@
         xhttp.send();
     }
 
+    function modalOpen(type) {
+        const contMain = document.getElementById('container-main');
+        const contAddResident = document.getElementById('container-addresident');
+        const contAddVehicle = document.getElementById('container-addvehicle');
+        if (type == 'addResident') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "flex";
+            contAddVehicle.style.display = "none";
+        } else if (type == 'addVehicle') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "none";
+            contAddVehicle.style.display = "flex";
+        } else if (type == 'main') {
+            contMain.style.display = "flex";
+            contAddResident.style.display = "none";
+            contAddVehicle.style.display = "none";
+        }
+    }
+
 </script>
 
 
@@ -730,12 +893,11 @@
                 const lastname = residentData.lastName || 'N/A';  
                 const firstname = residentData.firstName || 'N/A'; 
                 const datetime = formatTimestamp(data.datetime) || 'N/A'; 
-                const plate = data.licensePlate || 'N/A';  
+                const plate = vehicleData.licensePlate || 'N/A';  
                 const street = residentData.street || 'N/A';  
 
                 getDriverDetails(lastname, firstname, datetime, plate, street);
 
-                console.log(lastDetectedDriverInfo);
             } else {
                 console.log("No history found.");
             }
@@ -784,6 +946,7 @@
                         const datetime = data.datetime || today.toLocaleString();  // Assuming the field is 'datetime'
                         const plate = data.licensePlate || 'N/A';  // Assuming the field is 'plate'
                         const street = residentData.street || 'N/A';  // Assuming the field is 'street'
+                        console.log(data.licensePlate);
 
                         // Call getDriverDetails with the retrieved data
                         getDriverDetails(lastname, firstname, datetime, plate, street);
