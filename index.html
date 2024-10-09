@@ -4,11 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
-    <!-- <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>  -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> 
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid orange; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            }
         .resident input[type="text"] {
             padding: 10px;
             font-size: 16px;
@@ -30,6 +43,10 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-top:10px;
+        }
+
+        .flex {
+            display: flex;
         }
 
         .search-bar label {
@@ -436,22 +453,30 @@
             <div class="info-row">
                 <div class="info-label">Last Detected Driver Details</div>
             </div>
-            <div class="info-row2">
-                <div class="info-label">Name</div>
-                <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
+            <div id="LastDriverElement" class="flex" style="flex-direction: column;">
+                <div class="info-row2">
+                    <div class="info-label">Name</div>
+                    <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Plate Number</div>
+                    <div id="current-driver-plate" class="info-value">ABC123</div>
+                </div>
+                <div class="info-row3">
+                    <div class="info-label">Entry Info</div>
+                    <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Street</div>
+                    <div id="current-driver-street" class="info-value">Molave Street</div>
+                </div>
             </div>
-            <div class="info-row">
-                <div class="info-label">Plate Number</div>
-                <div id="current-driver-plate" class="info-value">ABC123</div>
+
+            <div id="LastDriverLoader" class="hidden" style="justify-content: center; width: 80%; padding: 10%;">
+                <div class="loader" id="loader" style="height:120px;">
+                </div>
             </div>
-            <div class="info-row3">
-                <div class="info-label">Entry Info</div>
-                <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Street</div>
-                <div id="current-driver-street" class="info-value">Molave Street</div>
-            </div>
+
         </div>
 
         <div id="alert-box" class="alert-box hidden">
@@ -475,14 +500,6 @@
 
         <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident.html'">Manage Residents</button>
 
-        <!-- <div style="display: flex; gap: 10px;">
-            <select title="addToDBSelect" name="dropdown" id="dropdown">
-                <option value="" selected disabled>Add Vehicle or Resident</option>
-                <option value="resident">Add Resident</option>
-                <option value="vehicle">Add Vehicle</option>
-            </select>
-            <button id="addToDBButton" style="width: 20%;" class="toggle-view" onclick="window.location.href='/resident.html'">Add</button>
-        </div> -->
         <div style="display: flex; justify-content: space-between;">
             <button id="addResident" style="width: 48%;" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
             <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
@@ -494,10 +511,6 @@
             <div class="info-row-top">
                 <div class="info-label">Gate Status</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Connection Status</div>
-                <div class="info-value">Online</div>
-            </div> -->
             <div class="info-row">
                 <div class="info-label">Position</div>
                 <div id="info-label-gate" class="info-value">Closed</div>
@@ -517,25 +530,6 @@
                 <div class="info-label">RFID Reader Status</div>
                 <div id="info-label-rfid" class="info-value">Online</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Obstacle Sensor Status</div>
-                <div class="info-value">Online</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Signal</div>
-                <div id="info-label-signal" class="info-value">50/100</div>
-            </div>
-            <div class="info-row2">
-                <div class="info-label">Camera Status</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Connection Status</div>
-                <div class="info-value">Offline</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Plate Detection Status</div>
-                <div class="info-value">ABC123</div>
-            </div> -->
         </div>
 
         <div id="status-icons" class="status-icons">
@@ -597,7 +591,6 @@
             <h2>Add Resident</h2>
             <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
         </div>
-        
         <div class="info-row">
             <label for="modal-addr-last-name">Last name:</label>
             <input type="text" id="modal-addr-last-name" class="info"></input>
@@ -633,45 +626,123 @@
         <div class="search-bar">
             <!-- From Date Section -->
             <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
-                <label for="fromDate"></label>
                 <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
-                <button class="toggle-view" onclick="modalOpen('main')" style="margin-bottom: 0px !important; height: 100%;">Search</button>
+                <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
             </div>
-            
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="resident">Resident:</label>
-            <select id="resident" style="padding: 10px; width: 50%;font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
-                <option value="na">N/A</option>
+            <select id="resident" style="padding: 10px; width: 220px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+                <option value="na" disabled selected>Search Resident First</option>
             </select>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="resident">License Plate:</label>
-            <input type="text" style="padding: 10px; width: 50%;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
+            <input type="text" style="padding: 10px; width: 200px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
             </input>
         </div>
         <div class="vehicle-row" style="margin-bottom: 10px;">
-            <div class="info"  style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
                 <label for="vehicle-type">Vehicle Type:</label>
                 <select id="vehicle-type" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
                     <option value="Sedan">Sedan</option>
                     <option value="SUV">SUV</option>
                     <option value="Truck">Truck</option>
+                    <option value="MC">Motorcycle</option>
+                    <option value="Jeepney">Jeepney</option>
                 </select>
             </div>
-            <div class="info" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="info" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
                 <label for="vehicle-brand">Vehicle Brand:</label>
                 <select id="vehicle-brand" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
                     <option value="Toyota">Toyota</option>
                     <option value="Honda">Honda</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Suzuki">Suzuki</option>
                     <option value="Ford">Ford</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Geely">Geely</option>
+                    <option value="NA">N/A</option>
                 </select>
             </div>
         </div>
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">Add Vehicle</button>
+        <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
 
     </div>
 </body>
+
+<script> 
+    function addVehicle() {
+        // Get the values from the form
+        const resident = document.getElementById('resident').value;
+        const licensePlate = document.querySelector('input[type="text"]').value;
+        const vehicleType = document.getElementById('vehicle-type').value;
+        const vehicleBrand = document.getElementById('vehicle-brand').value;
+
+        // Validation can be added here if needed
+
+        // Create the vehicle data object
+        const vehicleData = {
+            resident: resident,
+            licensePlate: licensePlate,
+            vehicleType: vehicleType,
+            vehicleBrand: vehicleBrand,
+            dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
+        };
+
+        // Add the vehicle data to the 'vehicles' collection in Firestore
+        db.collection('Vehicle').add(vehicleData)
+        .then(() => {
+            alert("Vehicle added successfully!");
+            // Optionally, close the modal or reset form fields
+            modalOpen('main'); // Example of closing the modal
+        })
+        .catch((error) => {
+            console.error("Error adding vehicle: ", error);
+        });
+        window.location.href='/'
+    }
+</script>
+
+<script>
+    // Function to search for residents
+    function searchResidents() {
+        const searchValue = document.getElementById('searchBar').value;
+        const residentsRef = db.collection('Residents');
+
+        residentsRef
+            .orderBy('name') // Assuming you have a 'name' field in the Resident documents
+            .startAt(searchValue) // Queries all residents >= searchValue
+            .endAt(searchValue + "\uf8ff") // Queries all residents <= searchValue (handles prefix matching)
+            .get()
+            .then((querySnapshot) => {
+                // Get the select element
+                const residentSelect = document.getElementById('resident');
+
+                // Clear previous options
+                residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
+
+                // Loop through the query results
+                querySnapshot.forEach((doc) => {
+                    const resident = doc.data();
+                    
+                    // Add an option for each resident found
+                    const option = document.createElement('option');
+                    option.value = doc.id; // Use resident document ID as the value
+                    option.textContent = resident.name; // Display resident name
+
+                    // Append the option to the select field
+                    residentSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("Error searching residents: ", error);
+            });
+    }
+</script>
+
 
 <script type = "text/javascript">
     var xmlHttp = createXmlHttpObject();
@@ -845,6 +916,22 @@
             oldsvg.innerHTML = path;
         }
 
+        function isLoading(a) {
+            const element = document.getElementById("LastDriverElement");
+            const loader = document.getElementById("LastDriverLoader");
+            if (a === true) {
+                loader.classList.add('flex');
+                loader.classList.remove('hidden');
+                element.classList.add('hidden');
+                element.classList.remove('flex');
+            } else {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                element.classList.add('flex');
+                element.classList.remove('hidden');
+            }
+        }
+
         const svg_gateClose =  `
                 <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
         `;
@@ -875,6 +962,7 @@
         getLastDetectedDriver();
 
         async function getLastDetectedDriver() {
+            isLoading(true);
             const querySnapshot = await db.collection("History")
                 .orderBy("datetime", "desc")  // Order by datetime in descending order
                 .limit(1)  // Get the most recent entry
@@ -897,6 +985,7 @@
                 const street = residentData.street || 'N/A';  
 
                 getDriverDetails(lastname, firstname, datetime, plate, street);
+                isLoading(false);
 
             } else {
                 console.log("No history found.");

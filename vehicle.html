@@ -231,7 +231,6 @@
         const outputDiv = document.getElementById('output');
         outputDiv.innerHTML = isLoading(true);
 
-
         const querySnapshot = await db.collection("Vehicle").get();
 
         outputDiv.innerHTML = isLoading(false);

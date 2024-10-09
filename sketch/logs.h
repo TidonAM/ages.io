@@ -7,6 +7,19 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES Logs</title>
     <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid orange; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
@@ -37,11 +50,14 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
             background-color: gray;
             color: white;
             border: none;
-            padding: 10px 20px;
+            /* padding: 10px 20px; */
             border-radius: 5px;
             cursor: pointer;
             /* margin-bottom: 20px; */
-            font-size: 16px;
+            /* font-size: 16px; */
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
         }
 
         .toggle-view:hover {
@@ -146,8 +162,9 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
         }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> <!-- For Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> <!-- For Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> 
+
 </head>
 <body>
 
@@ -188,6 +205,14 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 </div>
 
 <script>
+    function isLoading(a) {
+        if (a === true) {
+            return '<tr><td colspan="6"><div style="display: flex; justify-content: center; width: 80%; padding: 10%;"><div class="loader" id="loader" style="height:120px;"></div></div></td></tr>';
+        } else {
+            return '';
+        }
+    }
+
     const firebaseConfig = {
         apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
         authDomain: "ages-cd6bc.firebaseapp.com",
@@ -210,9 +235,11 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 
     async function readDataFromFirestore() {
         const outputDiv = document.getElementById('output');
-        outputDiv.innerHTML = '';  // Clear current data
+        outputDiv.innerHTML = isLoading(true);
 
         const querySnapshot = await db.collection("History").get();
+
+        outputDiv.innerHTML = isLoading(false);
 
         for (const doc of querySnapshot.docs) {
             const data = doc.data();
@@ -240,22 +267,23 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
     }
 
     function formatTimestamp(timestamp) {
-        if (!timestamp) return 'N/A';
-        
-        const date = timestamp.toDate();
+            if (!timestamp) return 'N/A';
+            
+            const date = timestamp.toDate();
 
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
 
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
-    }
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
 
     function filterLogs() {
         const fromDateValue = document.getElementById('fromDate').value;
         const toDateValue = document.getElementById('toDate').value;
+        outputDiv.innerHTML = isLoading(true);
 
         if (fromDateValue && toDateValue) {
             const fromDate = new Date(fromDateValue);
@@ -269,6 +297,7 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
                 .where("datetime", "<=", toTimestamp)
                 .get()
                 .then((querySnapshot) => {
+                    outputDiv.innerHTML = isLoading(false);
                     const outputDiv = document.getElementById('output');
                     outputDiv.innerHTML = '';  // Clear current data
 
@@ -301,6 +330,7 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 
 </body>
 </html>
+
 
 
 

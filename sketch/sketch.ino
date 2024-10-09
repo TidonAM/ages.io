@@ -7,6 +7,7 @@
 #include "index.h"
 #include "logs.h"
 #include "resident.h"
+#include "vehicle.h"
 
 //servo
 #include <ESP32Servo.h>
@@ -136,8 +137,9 @@ void setup() {
   printWifiStatus();
 
   server.on("/", SendWebsite);
-  server.on("/logs", SendLogs);
-  server.on("/resident", SendRes);
+  server.on("/logs.html", SendLogs);
+  server.on("/resident.html", SendRes);
+  server.on("/vehicle.html", SendVeh);
 
   server.on("/xml", SendXML);
   server.on("/gateposition", ProcessGatePosition);
@@ -287,6 +289,11 @@ void SendLogs() {
 void SendRes() {
   Serial.println("sending resident");
   server.send(200, "text/html", PAGE_RES);
+}
+
+void SendVeh() {
+  Serial.println("sending resident");
+  server.send(200, "text/html", PAGE_VEH);
 }
 
 void SendXML() {

@@ -7,10 +7,77 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> <!-- For Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> <!-- For Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> 
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid orange; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+            }
+        .resident input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 60%;
+        }
+        .date-container input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .search-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top:10px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .search-bar label {
+            font-size: 16px;
+            color: #555;
+            /* margin-right: 10px; */
+        }
+        .date-container {
+            display: flex;
+            width: 100%;
+            align-items: center;
+        }
+        h4 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            border-bottom: 1px solid #d0d0d0;
+            padding-bottom: 5px;
+        }
+        /* Vehicle Row Styling */
+        .vehicle-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .vehicle-row .info {
+            flex-basis: 48%;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
@@ -377,32 +444,41 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </div>
     -->
     <!-- Main Container -->
-    <div class="container">
+    <div class="container main" id="container-main">
         
         <div class="image-box">
             <img src="hillcrest.webp" alt="Gate Image">
+            <!-- <iframe src="http://192.168.1.54" width="100%" height="600" id="myIframe" frameborder="0" allowfullscreen></iframe> -->
         </div>
 
         <div class="driver-info">
             <div class="info-row">
                 <div class="info-label">Last Detected Driver Details</div>
             </div>
-            <div class="info-row2">
-                <div class="info-label">Name</div>
-                <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
+            <div id="LastDriverElement" class="flex" style="flex-direction: column;">
+                <div class="info-row2">
+                    <div class="info-label">Name</div>
+                    <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Plate Number</div>
+                    <div id="current-driver-plate" class="info-value">ABC123</div>
+                </div>
+                <div class="info-row3">
+                    <div class="info-label">Entry Info</div>
+                    <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Street</div>
+                    <div id="current-driver-street" class="info-value">Molave Street</div>
+                </div>
             </div>
-            <div class="info-row">
-                <div class="info-label">Plate Number</div>
-                <div id="current-driver-plate" class="info-value">ABC123</div>
+
+            <div id="LastDriverLoader" class="hidden" style="justify-content: center; width: 80%; padding: 10%;">
+                <div class="loader" id="loader" style="height:120px;">
+                </div>
             </div>
-            <div class="info-row3">
-                <div class="info-label">Entry Info</div>
-                <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Street</div>
-                <div id="current-driver-street" class="info-value">Molave Street</div>
-            </div>
+
         </div>
 
         <div id="alert-box" class="alert-box hidden">
@@ -420,11 +496,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </div>
         </div>
 
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs'">View Logs</button>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">View Logs</button>
 
-        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle'">Manage Vehicles</button>
+        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle.html'">Manage Vehicles</button>
 
-        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident'">Manage Residents</button>
+        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident.html'">Manage Residents</button>
+
+        <div style="display: flex; justify-content: space-between;">
+            <button id="addResident" style="width: 48%;" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
+            <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
+        </div>
 
         <button id="changeViewButton" class="toggle-view">Change View</button>
 
@@ -432,10 +513,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <div class="info-row-top">
                 <div class="info-label">Gate Status</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Connection Status</div>
-                <div class="info-value">Online</div>
-            </div> -->
             <div class="info-row">
                 <div class="info-label">Position</div>
                 <div id="info-label-gate" class="info-value">Closed</div>
@@ -455,25 +532,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 <div class="info-label">RFID Reader Status</div>
                 <div id="info-label-rfid" class="info-value">Online</div>
             </div>
-            <!-- <div class="info-row">
-                <div class="info-label">Obstacle Sensor Status</div>
-                <div class="info-value">Online</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Signal</div>
-                <div id="info-label-signal" class="info-value">50/100</div>
-            </div>
-            <div class="info-row2">
-                <div class="info-label">Camera Status</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Connection Status</div>
-                <div class="info-value">Offline</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Plate Detection Status</div>
-                <div class="info-value">ABC123</div>
-            </div> -->
         </div>
 
         <div id="status-icons" class="status-icons">
@@ -529,7 +587,164 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </div> -->
         </div>
     </div>
+
+    <div class="container modal resident" id="container-addresident" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Add Resident</h2>
+            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-last-name">Last name:</label>
+            <input type="text" id="modal-addr-last-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-first-name">First name:</label>
+            <input type="text" id="modal-addr-first-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-middle-initial">Middle Initial:</label>
+            <input type="text" id="modal-addr-middle-initial" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-street">Street:</label>
+            <input type="text" id="modal-addr-street" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-block">Block:</label>
+            <input type="text" id="modal-addr-block" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-lot">Lot:</label>
+            <input type="text" id="modal-addr-lot" class="info"></input>
+        </div>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">Add Resident</button>
+    </div>
+
+    <div class="container modal vehicle" id="container-addvehicle" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Add Vehicle</h2>
+            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+        </div>
+        <div class="search-bar">
+            <!-- From Date Section -->
+            <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
+                <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
+                <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="resident">Resident:</label>
+            <select id="resident" style="padding: 10px; width: 220px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+                <option value="na" disabled selected>Search Resident First</option>
+            </select>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="resident">License Plate:</label>
+            <input type="text" style="padding: 10px; width: 200px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
+            </input>
+        </div>
+        <div class="vehicle-row" style="margin-bottom: 10px;">
+            <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <label for="vehicle-type">Vehicle Type:</label>
+                <select id="vehicle-type" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Sedan">Sedan</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Truck">Truck</option>
+                    <option value="MC">Motorcycle</option>
+                    <option value="Jeepney">Jeepney</option>
+                </select>
+            </div>
+            <div class="info" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <label for="vehicle-brand">Vehicle Brand:</label>
+                <select id="vehicle-brand" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Toyota">Toyota</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Suzuki">Suzuki</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Geely">Geely</option>
+                    <option value="NA">N/A</option>
+                </select>
+            </div>
+        </div>
+        <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
+
+    </div>
 </body>
+
+<script> 
+    function addVehicle() {
+        // Get the values from the form
+        const resident = document.getElementById('resident').value;
+        const licensePlate = document.querySelector('input[type="text"]').value;
+        const vehicleType = document.getElementById('vehicle-type').value;
+        const vehicleBrand = document.getElementById('vehicle-brand').value;
+
+        // Validation can be added here if needed
+
+        // Create the vehicle data object
+        const vehicleData = {
+            resident: resident,
+            licensePlate: licensePlate,
+            vehicleType: vehicleType,
+            vehicleBrand: vehicleBrand,
+            dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
+        };
+
+        // Add the vehicle data to the 'vehicles' collection in Firestore
+        db.collection('Vehicle').add(vehicleData)
+        .then(() => {
+            alert("Vehicle added successfully!");
+            // Optionally, close the modal or reset form fields
+            modalOpen('main'); // Example of closing the modal
+        })
+        .catch((error) => {
+            console.error("Error adding vehicle: ", error);
+        });
+        window.location.href='/'
+    }
+</script>
+
+<script>
+    // Function to search for residents
+    function searchResidents() {
+        const searchValue = document.getElementById('searchBar').value;
+        const residentsRef = db.collection('Residents');
+
+        residentsRef
+            .orderBy('name') // Assuming you have a 'name' field in the Resident documents
+            .startAt(searchValue) // Queries all residents >= searchValue
+            .endAt(searchValue + "\uf8ff") // Queries all residents <= searchValue (handles prefix matching)
+            .get()
+            .then((querySnapshot) => {
+                // Get the select element
+                const residentSelect = document.getElementById('resident');
+
+                // Clear previous options
+                residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
+
+                // Loop through the query results
+                querySnapshot.forEach((doc) => {
+                    const resident = doc.data();
+                    
+                    // Add an option for each resident found
+                    const option = document.createElement('option');
+                    option.value = doc.id; // Use resident document ID as the value
+                    option.textContent = resident.name; // Display resident name
+
+                    // Append the option to the select field
+                    residentSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("Error searching residents: ", error);
+            });
+    }
+</script>
+
 
 <script type = "text/javascript">
     var xmlHttp = createXmlHttpObject();
@@ -657,6 +872,25 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         xhttp.send();
     }
 
+    function modalOpen(type) {
+        const contMain = document.getElementById('container-main');
+        const contAddResident = document.getElementById('container-addresident');
+        const contAddVehicle = document.getElementById('container-addvehicle');
+        if (type == 'addResident') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "flex";
+            contAddVehicle.style.display = "none";
+        } else if (type == 'addVehicle') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "none";
+            contAddVehicle.style.display = "flex";
+        } else if (type == 'main') {
+            contMain.style.display = "flex";
+            contAddResident.style.display = "none";
+            contAddVehicle.style.display = "none";
+        }
+    }
+
 </script>
 
 
@@ -682,6 +916,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         function changeSVG(path, oldsvgId, divId) {
             const oldsvg = document.getElementById(oldsvgId);
             oldsvg.innerHTML = path;
+        }
+
+        function isLoading(a) {
+            const element = document.getElementById("LastDriverElement");
+            const loader = document.getElementById("LastDriverLoader");
+            if (a === true) {
+                loader.classList.add('flex');
+                loader.classList.remove('hidden');
+                element.classList.add('hidden');
+                element.classList.remove('flex');
+            } else {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                element.classList.add('flex');
+                element.classList.remove('hidden');
+            }
         }
 
         const svg_gateClose =  `
@@ -714,6 +964,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         getLastDetectedDriver();
 
         async function getLastDetectedDriver() {
+            isLoading(true);
             const querySnapshot = await db.collection("History")
                 .orderBy("datetime", "desc")  // Order by datetime in descending order
                 .limit(1)  // Get the most recent entry
@@ -732,12 +983,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 const lastname = residentData.lastName || 'N/A';  
                 const firstname = residentData.firstName || 'N/A'; 
                 const datetime = formatTimestamp(data.datetime) || 'N/A'; 
-                const plate = data.licensePlate || 'N/A';  
+                const plate = vehicleData.licensePlate || 'N/A';  
                 const street = residentData.street || 'N/A';  
 
                 getDriverDetails(lastname, firstname, datetime, plate, street);
+                isLoading(false);
 
-                console.log(lastDetectedDriverInfo);
             } else {
                 console.log("No history found.");
             }
@@ -786,6 +1037,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                         const datetime = data.datetime || today.toLocaleString();  // Assuming the field is 'datetime'
                         const plate = data.licensePlate || 'N/A';  // Assuming the field is 'plate'
                         const street = residentData.street || 'N/A';  // Assuming the field is 'street'
+                        console.log(data.licensePlate);
 
                         // Call getDriverDetails with the retrieved data
                         getDriverDetails(lastname, firstname, datetime, plate, street);

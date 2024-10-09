@@ -1,11 +1,11 @@
-const char PAGE_RES[] PROGMEM = R"=====(
+const char PAGE_VEH[] PROGMEM = R"=====(
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Residents</title>
+    <title>Vehicles</title>
     <style>
         .loader {
             border: 16px solid #f3f3f3; /* Light grey */
@@ -50,11 +50,8 @@ const char PAGE_RES[] PROGMEM = R"=====(
             background-color: gray;
             color: white;
             border: none;
-            /* padding: 10px 20px; */
             border-radius: 5px;
             cursor: pointer;
-            /* margin-bottom: 20px; */
-            /* font-size: 16px; */
             width: 100%;
             padding: 12px;
             font-size: 14px;
@@ -158,13 +155,13 @@ const char PAGE_RES[] PROGMEM = R"=====(
         }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> <!-- For Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> <!-- For Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> 
 </head>
 <body>
 
 <div class="container">
-    <h1>Residents</h1>
+    <h1>Vehicles</h1>
     <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/'">Go Back</button>
 
     <div class="search-bar">
@@ -178,9 +175,9 @@ const char PAGE_RES[] PROGMEM = R"=====(
             <option value="lastName">Last Name</option>
             <option value="firstName">First Name</option>
             <option value="middleName">Middle Name</option>
-            <option value="street">Street</option>
-            <option value="block">Block</option>
-            <option value="lot">Lot</option>
+            <option value="vType">Vehicle Type</option>
+            <option value="vBrand">Vehicle Brand</option>
+            <option value="licensePlate">License Plate</option>
         </select>
 
         <button class="toggle-view" onclick="search()">Search</button>
@@ -192,13 +189,13 @@ const char PAGE_RES[] PROGMEM = R"=====(
                 <th>Last Name</th>
                 <th>First Name</th>
                 <th>Middle Name</th>
-                <th>Street</th>
-                <th>Block</th>
-                <th>Lot</th>
+                <th>Type</th>
+                <th>Brand</th>
+                <th>License Plate</th>
             </tr>
         </thead>
         <tbody id="output">
-        </tbody>
+                    </tbody>
     </table>
 </div>
 
@@ -210,6 +207,7 @@ const char PAGE_RES[] PROGMEM = R"=====(
             return '';
         }
     }
+
     const firebaseConfig = {
         apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
         authDomain: "ages-cd6bc.firebaseapp.com",
@@ -229,19 +227,20 @@ const char PAGE_RES[] PROGMEM = R"=====(
     }
 
     readDataFromFirestore();
+    
 
     async function readDataFromFirestore() {
         const outputDiv = document.getElementById('output');
         outputDiv.innerHTML = isLoading(true);
 
-        const querySnapshot = await db.collection("Residents").get();
+        const querySnapshot = await db.collection("Vehicle").get();
 
         outputDiv.innerHTML = isLoading(false);
-        
+
         for (const doc of querySnapshot.docs) {
             const data = doc.data();
             
-            // const vehicleData = await fetchReferenceData(data.vehicle);
+            const residentData = await fetchReferenceData(data.owner);
 
             // New row of table
             const row = document.createElement('tr');
@@ -255,50 +254,93 @@ const char PAGE_RES[] PROGMEM = R"=====(
 
             // Add table data
             row.innerHTML = `
-                <td>${data.lastName}</td>
-                <td>${data.firstName || 'N/A'}</td>
-                <td>${data.middleName || 'N/A'}</td>
-                <td>${data.street || 'N/A'}</td>
-                <td>${data.block}</td>
-                <td>${data.lot || 'N/A'}</td>
+                <td>${residentData.lastName || 'N/A'}</td>
+                <td>${residentData.firstName || 'N/A'}</td>
+                <td>${residentData.middleName || 'N/A'}</td>
+                <td>${data.vType || 'N/A'}</td>
+                <td>${data.vBrand || 'N/A'}</td>
+                <td>${data.licensePlate || 'N/A'}</td>
             `;
             outputDiv.appendChild(row);
         }
     }
 
     function search() {
-        const outputDiv = document.getElementById('output');
-        const dropdownValue = document.getElementById('dropdown').value;
-        const searchBarValue = document.getElementById('searchBar').value;
-        outputDiv.innerHTML = isLoading(true);
+    const dropdownValue = document.getElementById('dropdown').value;
+    const searchBarValue = document.getElementById('searchBar').value;
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = isLoading(true);
 
-        if (searchBarValue != null) {
+    if (searchBarValue != null) {
+        if (dropdownValue === "firstName" || dropdownValue === "lastName" || dropdownValue === "middleName") {
+            // Search in the Residents collection first
             db.collection("Residents")
             .where(dropdownValue, ">=", searchBarValue)
             .where(dropdownValue, "<=", searchBarValue + '\uf8ff')
             .get()
-            .then((querySnapshot) => {
+            .then(async (querySnapshot) => {
+                outputDiv.innerHTML = isLoading(false);
+                // Process each matching resident
+                for (const residentDoc of querySnapshot.docs) {
+                    const residentData = residentDoc.data();
+                    
+                    // Now query Vehicle collection for this resident reference
+                    const vehicleSnapshot = await db.collection("Vehicle")
+                        .where("owner", "==", db.doc(`/Residents/${residentDoc.id}`))
+                        .get();
+
+                    for (const vehicleDoc of vehicleSnapshot.docs) {
+                        const vehicleData = vehicleDoc.data();
+
+                        // New row of table
+                        const row = document.createElement('tr');
+                        row.id = vehicleDoc.id;
+
+                        // Add table data
+                        row.innerHTML = `
+                            <td>${residentData.lastName || 'N/A'}</td>
+                            <td>${residentData.firstName || 'N/A'}</td>
+                            <td>${residentData.middleName || 'N/A'}</td>
+                            <td>${vehicleData.vType || 'N/A'}</td>
+                            <td>${vehicleData.vBrand || 'N/A'}</td>
+                            <td>${vehicleData.licensePlate || 'N/A'}</td>
+                        `;
+                        outputDiv.appendChild(row);
+                    }
+                }
+            });
+        } else {
+            // If searching within Vehicle collection (e.g., vType, vBrand)
+            db.collection("Vehicle")
+            .where(dropdownValue, ">=", searchBarValue)
+            .where(dropdownValue, "<=", searchBarValue + '\uf8ff')
+            .get()
+            .then(async (querySnapshot) => {
                 const outputDiv = document.getElementById('output');
                 outputDiv.innerHTML = isLoading(false);
-                querySnapshot.forEach(async (doc) => {
+                for (const doc of querySnapshot.docs) {
                     const data = doc.data();
+                    const residentData = await fetchReferenceData(data.owner);
 
+                    // New row of table
                     const row = document.createElement('tr');
+                    row.id = doc.id;
 
+                    // Add table data
                     row.innerHTML = `
-                        <td>${data.lastName}</td>
-                        <td>${data.firstName || 'N/A'}</td>
-                        <td>${data.middleName || 'N/A'}</td>
-                        <td>${data.street || 'N/A'}</td>
-                        <td>${data.block}</td>
-                        <td>${data.lot || 'N/A'}</td>
+                        <td>${residentData.lastName || 'N/A'}</td>
+                        <td>${residentData.firstName || 'N/A'}</td>
+                        <td>${residentData.middleName || 'N/A'}</td>
+                        <td>${data.vType || 'N/A'}</td>
+                        <td>${data.vBrand || 'N/A'}</td>
+                        <td>${data.licensePlate || 'N/A'}</td>
                     `;
                     outputDiv.appendChild(row);
-                });
+                }
             });
         }
-        
     }
+}
 
     function formatTimestamp(timestamp) {
         if (!timestamp) return 'N/A';
