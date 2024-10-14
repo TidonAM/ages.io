@@ -14,13 +14,13 @@
 Servo mainServo;
 
 //tempo rfid
-#include <MFRC522v2.h>
-#include <MFRC522DriverSPI.h>
-#include <MFRC522DriverPinSimple.h>
-#include <MFRC522Debug.h>
-MFRC522DriverPinSimple ss_pin(5);
-MFRC522DriverSPI driver{ss_pin};
-MFRC522 mfrc522{driver};
+// #include <MFRC522v2.h>
+// #include <MFRC522DriverSPI.h>
+// #include <MFRC522DriverPinSimple.h>
+// #include <MFRC522Debug.h>
+// MFRC522DriverPinSimple ss_pin(5);
+// MFRC522DriverSPI driver{ss_pin};
+// MFRC522 mfrc522{driver};
 
 #define USE_OTHER_WIFI
 // #define USE_BOTH_WIFI_AP
@@ -30,6 +30,10 @@ MFRC522 mfrc522{driver};
 
 #define AP_SSID "ESP32Website"
 #define AP_PASS "espespespesp"
+
+#define PIN_MOTOR_RPM 37
+#define PIN_MOTOR_BRK 34
+#define PIN_MOTOR_DIR 32
 
 #define PIN_MOTOR 25
 #define GATE_OPEN 90
@@ -85,7 +89,6 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
 
-  pinMode(PIN_LED, OUTPUT); 
   pinMode(PIN_MOTOR, OUTPUT);
   pinMode(PIN_TEMP, INPUT);
   pinMode(PIN_FAN, OUTPUT);
@@ -99,8 +102,8 @@ void setup() {
   mainServo.write(GATE_CLOSE);
   gateStatus = "0";
   // while (!Serial);     // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4).
-  mfrc522.PCD_Init();  // Init MFRC522 board.
-  MFRC522Debug::PCD_DumpVersionToSerial(mfrc522, Serial);	// Show details of PCD - MFRC522 Card Reader details.
+  // mfrc522.PCD_Init();  // Init MFRC522 board.
+  // MFRC522Debug::PCD_DumpVersionToSerial(mfrc522, Serial);	// Show details of PCD - MFRC522 Card Reader details.
 	Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
 
   // disableCore0WDT();
@@ -168,41 +171,31 @@ const long interval = 500;
 void rfidRead() {
   if (loopClose == false) {
     unsigned long currentMillis = millis();
-
     if (currentMillis - rfidMillis >= interval) {
       rfidMillis = currentMillis;
       Serial.println("rfid reading:");
       rfidUID = "";
       rfidDone = false;
-      if ( !mfrc522.PICC_IsNewCardPresent()) {
-        return;
+
+      while (RFID.available() > 0) {
+        delay(5);  // Small delay for data gathering
+        char c = RFID.read();
+        rfidUID += c;
       }
-      // Select one of the cards.
-      if ( !mfrc522.PICC_ReadCardSerial()) {
-        return;
+
+      if (rfidUID.length() > 20) {
+        rfidUID.toUpperCase();
+        rfidDone = true;
       }
-      byte letter;
-      for (byte i = 0; i < mfrc522.uid.size; i++) {
-        // Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-        // Serial.print(mfrc522.uid.uidByte[i], HEX);
-        rfidUID.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
-        rfidUID.concat(String(mfrc522.uid.uidByte[i], HEX));
-      }
-      rfidUID.toUpperCase();
-      rfidDone = true;
 
     }
-
-    // Serial.print(F(": Card UID:"));
-    // MFRC522Debug::PrintUID(Serial, mfrc522.uid);
-    // Serial.println();
   }
 }
 
 void GateClosing() {
   if ((millis() - lastServoMoveTime >= ROTATION_INTERVAL)) {
     lastServoMoveTime = millis();
-    
+
     if (loopClose == true) {
       // Step the servo towards GATE_CLOSE
       if (MotorRotate > GATE_CLOSE-1) {
