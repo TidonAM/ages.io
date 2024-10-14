@@ -238,9 +238,6 @@
         
         for (const doc of querySnapshot.docs) {
             const data = doc.data();
-            
-            // const vehicleData = await fetchReferenceData(data.vehicle);
-
             // New row of table
             const row = document.createElement('tr');
             row.id = doc.id;
