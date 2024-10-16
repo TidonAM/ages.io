@@ -842,13 +842,6 @@
 
             // document.getElementById("icon-label-obs").innerHTML = message;
 
-            xmldoc = xmlResponse.getElementsByTagName("T");
-            message = xmldoc[0].firstChild.nodeValue;
-
-            document.getElementById("icon-label-temp").innerHTML = message+"°C";
-            document.getElementById("info-label-temp").innerHTML = message+"°C";
-            document.getElementById("board-temp");
-
             xmldoc = xmlResponse.getElementsByTagName("GPOS");
             message = xmldoc[0].firstChild.nodeValue;
 

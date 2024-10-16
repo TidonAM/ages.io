@@ -13,17 +13,7 @@
 #include <ESP32Servo.h>
 Servo mainServo;
 
-//tempo rfid
-// #include <MFRC522v2.h>
-// #include <MFRC522DriverSPI.h>
-// #include <MFRC522DriverPinSimple.h>
-// #include <MFRC522Debug.h>
-// MFRC522DriverPinSimple ss_pin(5);
-// MFRC522DriverSPI driver{ss_pin};
-// MFRC522 mfrc522{driver};
-
 #define USE_OTHER_WIFI
-// #define USE_BOTH_WIFI_AP
 
 #define LOCAL_SSID ""
 #define LOCAL_PASS ""
