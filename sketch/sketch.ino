@@ -1,67 +1,42 @@
+#include <Arduino.h>
+
 #include <WiFi.h>
 #include <WebServer.h>
-
-#include "NewPing.h"
-
-//index html page
+#include <NewPing.h>
 #include "index.h"
 #include "logs.h"
 #include "resident.h"
 #include "vehicle.h"
+#include <SoftwareSerial.h>
+SoftwareSerial RFID(5,4);
 
-//servo
-#include <ESP32Servo.h>
-Servo mainServo;
+#define LOCAL_SSID "paconnect"
+#define LOCAL_PASS "f3hrazik"
 
-#define USE_OTHER_WIFI
+#define PIN_MOTOR_RPM 32
+#define PIN_MOTOR_BRK 33
+#define PIN_MOTOR_DIR 25
+#define PIN_ARD_RX 16
+#define PIN_ARD_TX 17
 
-#define LOCAL_SSID ""
-#define LOCAL_PASS ""
-
-#define AP_SSID "ESP32Website"
-#define AP_PASS "espespespesp"
-
-#define PIN_MOTOR_RPM 37
-#define PIN_MOTOR_BRK 34
-#define PIN_MOTOR_DIR 32
-
-#define PIN_MOTOR 25
-#define GATE_OPEN 90
-#define GATE_OPEN_VAR 1
-#define GATE_CLOSE 0
-#define ROTATION_INTERVAL 10
-#define MOTOR_STEP 5
-
-#define PIN_LED 2
-#define PIN_TEMP 33
-// #define PIN_DIST 32
-#define PIN_FAN 13
-
-#define DIST_MIN 10
-#define DIST_MAX 100
+#define PIN_DIST_T 14
 #define PIN_DIST_E 26
-#define PIN_DIST_T 27
+#define DIST_MAX 100
 
-//distance
 NewPing sonar(PIN_DIST_T, PIN_DIST_E, DIST_MAX);
 
-int SensorDistance = 0;
-int MotorRotate = -1;
+// Motor shenanigans
+bool isClosing = false;
+bool isReversing = false;
+unsigned long motorStartTime = 0; // Variable to store the start time
+const unsigned long motorDuration = 750; // 3 seconds (3000 milliseconds)
+bool motorRunning = false; // Flag to check if the motor is running
+bool motorOpening = false; // Track motor state (opening/closing)
 String gateStatus = "0";
-int GateStatus = 0;
-int MotorAngle = 0;
-bool movingToClose = false;
-int Temperature = 0;
-int FanRPM = 0;
-int FanSpeed = 0;
+// Overall Sensor Website Update
 uint32_t SensorUpdate = 0;
-uint32_t MotorUpdate = 0;
-unsigned long lastServoMoveTime = 0;
-bool LED0 = 0;
-bool loopClose = false;
 bool rfidDone = false;
 String rfidUID = "";
-
 char XML[2048];
 
 char buf[32];
@@ -75,185 +50,8 @@ IPAddress ip;
 
 WebServer server(80);
 
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-
-  pinMode(PIN_MOTOR, OUTPUT);
-  pinMode(PIN_TEMP, INPUT);
-  pinMode(PIN_FAN, OUTPUT);
-
-  LED0 = false;
-  int SensorDistance = 0;
-  int Temperature = 0;
-  int FanRPM = 0;
-  digitalWrite(PIN_LED, LED0);
-  mainServo.attach(PIN_MOTOR);
-  mainServo.write(GATE_CLOSE);
-  gateStatus = "0";
-  // while (!Serial);     // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4).
-  // mfrc522.PCD_Init();  // Init MFRC522 board.
-  // MFRC522Debug::PCD_DumpVersionToSerial(mfrc522, Serial);	// Show details of PCD - MFRC522 Card Reader details.
-	Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
-
-  // disableCore0WDT();
-  // disableCore1WDT();
-
-  Serial.println("Starting Wifi Server"); 
-
-  #ifdef USE_OTHER_WIFI
-    WiFi.begin(LOCAL_SSID, LOCAL_PASS);
-    // if (!WiFi.config(PageIP, gateway, subnet)) {
-    //   Serial.println("STA Failed to configure");
-    // }
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
-    Serial.print("IP Address: "); Serial.println(WiFi.localIP());
-    Actual_IP = WiFi.localIP();
-  #endif
-
-  #ifndef USE_OTHER_WIFI
-    WiFi.softAP(AP_SSID, AP_PASS);
-    delay(100);
-    WiFi.softAPConfig(PageIP, gateway, subnet);
-    delay(100);
-    Actual_IP = WiFi.softAPIP();
-    Serial.print("IP address: "); Serial.println(Actual_IP);
-    Serial.print("SSID: "); Serial.println(AP_SSID);
-    Serial.print("PASSWORD: "); Serial.println(AP_PASS);
-  #endif
-
-  WiFi.setSleep(false);
-
-  printWifiStatus();
-
-  server.on("/", SendWebsite);
-  server.on("/logs.html", SendLogs);
-  server.on("/resident.html", SendRes);
-  server.on("/vehicle.html", SendVeh);
-
-  server.on("/xml", SendXML);
-  server.on("/gateposition", ProcessGatePosition);
-  server.begin();
-
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  if ((millis() - SensorUpdate) >= 50) {
-    SensorUpdate = millis();
-    if (sonar.ping_cm() != 0) {
-      SensorDistance = sonar.ping_cm();
-    }
-    Temperature = temperatureRead();
-  }
-  GateClosing();
-  rfidRead();
-
-  server.handleClient();
-}
-
 unsigned long rfidMillis = 0;
 const long interval = 500;
-
-void rfidRead() {
-  if (loopClose == false) {
-    unsigned long currentMillis = millis();
-    if (currentMillis - rfidMillis >= interval) {
-      rfidMillis = currentMillis;
-      Serial.println("rfid reading:");
-      rfidUID = "";
-      rfidDone = false;
-
-      while (RFID.available() > 0) {
-        delay(5);  // Small delay for data gathering
-        char c = RFID.read();
-        rfidUID += c;
-      }
-
-      if (rfidUID.length() > 20) {
-        rfidUID.toUpperCase();
-        rfidDone = true;
-      }
-
-    }
-  }
-}
-
-void GateClosing() {
-  if ((millis() - lastServoMoveTime >= ROTATION_INTERVAL)) {
-    lastServoMoveTime = millis();
-
-    if (loopClose == true) {
-      // Step the servo towards GATE_CLOSE
-      if (MotorRotate > GATE_CLOSE-1) {
-        MotorRotate -= MOTOR_STEP;  // Adjust this step size as needed
-        mainServo.write(MotorRotate);
-        movingToClose = true;
-        Serial.println("Gate closing");
-      } else {
-        gateStatus = "0";
-        loopClose = false;
-        movingToClose = false;  // Servo has reached the closed position
-        Serial.println("Gate closed");
-      }
-      
-      // If distance is below the minimum, stop and reverse
-      if (SensorDistance < DIST_MIN && movingToClose) {
-        MotorRotate = GATE_OPEN-1;
-        mainServo.write(GATE_OPEN);
-        movingToClose = true;
-        gateStatus = "1";
-        Serial.println("Gate disrupted");
-      }
-    }
-
-  }
-}
-
-void ProcessGatePosition() {
-  String positionValue;
-
-  Serial.println(MotorRotate);
-  Serial.println(gateStatus);
-  Serial.println(mainServo.read());
-
-  if (server.hasArg("position")) {
-    positionValue = server.arg("position");  // Get the value of 'position'
-    Serial.print("Received position value: ");
-    Serial.println(positionValue);
-    if (positionValue == "1" && gateStatus == "0") {
-      mainServo.write(GATE_OPEN);  // Move servo to 0 when touched
-      MotorRotate = GATE_OPEN-1;
-      movingToClose = false;
-      gateStatus = "1";
-      loopClose = false;
-      Serial.println("Gate opened");
-    } else if (positionValue == "0" && gateStatus == "1") {
-        // Close the gate
-        loopClose = true;
-    } else {
-      Serial.println("unknown pos and gate");
-      Serial.println(positionValue);
-      Serial.println(gateStatus);
-    }
-  }
-
-  server.send(200, "text/plain", gateStatus); //Send web page
-
-}
-
-void ProcessButton_0() {
-
-  LED0 = !LED0;
-  digitalWrite(PIN_LED, LED0);
-  Serial.print("Button 0 "); Serial.println(LED0);
-
-  server.send(200, "text/plain", ""); //Send web page
-
-}
 
 void SendWebsite() {
 
@@ -279,16 +77,21 @@ void SendVeh() {
   server.send(200, "text/html", PAGE_VEH);
 }
 
+int readUltrasonicSensor() {
+    int distance = sonar.ping_cm();
+    if (distance != 0) {
+        return distance;
+    }
+    return -1; // Return -1 if no valid distance reading
+}
+
 void SendXML() {
 
   Serial.println("sendXML:");
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
-  sprintf(buf, "<SD>%d</SD>\n", SensorDistance);
-  strcat(XML, buf);
-
-  sprintf(buf, "<T>%d</T>\n", Temperature);
+  sprintf(buf, "<SD>%d</SD>\n", readUltrasonicSensor());
   strcat(XML, buf);
 
   if (rfidDone) {
@@ -343,4 +146,172 @@ void printWifiStatus() {
   Serial.println(ip);
 }
 
-// I think I got this code from the wifi example
+void stopMotor(boolean state) {
+    if (state) {
+        digitalWrite(PIN_MOTOR_BRK, HIGH); // Activate brake
+    } else {
+        digitalWrite(PIN_MOTOR_BRK, LOW);  // Release brake
+    }
+}
+
+void runMotor(String state) {
+    stopMotor(true);  // Activate brake before starting
+
+    // Start the motor based on the given state (open or close)
+    if (state == "close") {
+        // Serial2.write(0);
+        Serial.println("0 sent");
+        digitalWrite(PIN_MOTOR_DIR, LOW);   // Send close signal to Arduino
+        motorStartTime = millis();  // Set the start time for closing
+        gateStatus = "0";
+    } else if (state == "open") {
+        // Serial2.write(1);
+        Serial.println("1 sent");
+        digitalWrite(PIN_MOTOR_DIR, HIGH);   // Send open signal to Arduino
+        motorStartTime = millis();  // Set the start time for opening
+        gateStatus = "1";
+    }
+
+    stopMotor(false);  // Release brake and start the motor
+    analogWrite(PIN_MOTOR_RPM, 20); // Set motor speed
+    motorRunning = true;  // Set motorRunning to true since it's now running
+}
+
+void ProcessGatePosition() {
+  String positionValue;
+
+  Serial.println(gateStatus);
+
+  if (server.hasArg("position")) {
+    positionValue = server.arg("position");  // Get the value of 'position'
+    Serial.print("Received position value: ");
+    Serial.println(positionValue);
+    if (positionValue == "1" && gateStatus == "0") {
+      runMotor("open");
+      Serial.println("Gate opened");
+    } else if (positionValue == "0" && gateStatus == "1") {
+        // Close the gate
+        runMotor("close");
+    } else {
+      Serial.println("unknown pos and gate");
+      Serial.println(positionValue);
+      Serial.println(gateStatus);
+    }
+  }
+
+  server.send(200, "text/plain", gateStatus); //Send web page
+
+}
+
+void rfidRead() {
+  if (motorOpening == false) {
+    unsigned long currentMillis = millis();
+    if (currentMillis - rfidMillis >= interval) {
+      rfidMillis = currentMillis;
+      Serial.println("rfid reading:");
+      rfidUID = "";
+      rfidDone = false;
+
+      while (RFID.available() > 0) {
+        delay(5);  // Small delay for data gathering
+        char c = RFID.read();
+        rfidUID += c;
+      }
+
+      if (rfidUID.length() > 20) {
+        rfidUID.toUpperCase();
+        rfidDone = true;
+      }
+
+    }
+  }
+}
+
+
+
+void setup() {
+    Serial.begin(115200);
+    Serial2.begin(9600, SERIAL_8N1, PIN_ARD_RX, PIN_ARD_TX);
+    RFID.begin(9600);
+
+    pinMode(PIN_MOTOR_DIR, OUTPUT);
+    pinMode(PIN_MOTOR_BRK, OUTPUT);
+    pinMode(27, OUTPUT);
+    
+
+    digitalWrite(PIN_MOTOR_BRK, LOW); // Disengage brake (active low)
+    digitalWrite(PIN_MOTOR_DIR, LOW); 
+    analogWrite(PIN_MOTOR_RPM, 0);
+    gateStatus = "0";
+
+    WiFi.begin(LOCAL_SSID, LOCAL_PASS);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.print("IP Address: "); Serial.println(WiFi.localIP());
+    Actual_IP = WiFi.localIP();
+
+    WiFi.setSleep(false);
+
+    printWifiStatus();
+
+    server.on("/", SendWebsite);
+    server.on("/logs.html", SendLogs);
+    server.on("/resident.html", SendRes);
+    server.on("/vehicle.html", SendVeh);
+
+    server.on("/xml", SendXML);
+    server.on("/gateposition", ProcessGatePosition);
+    server.begin();
+
+
+    // Add WiFi and WebServer setup if needed
+    // WiFi.begin(LOCAL_SSID, LOCAL_PASS);
+    // ... other WiFi or server setup code
+}
+
+void loop() {
+    if (motorRunning && (millis() - motorStartTime >= motorDuration)) {
+        stopMotor(true);
+        motorRunning = false;
+        analogWrite(PIN_MOTOR_RPM, 0);
+        Serial.println("Motor Stopping");
+        motorOpening = !motorOpening;
+    } 
+
+    // if (!motorRunning) {
+    //   if (motorOpening) {
+    //       runMotor("open");  // Start the motor in the open direction
+    //       Serial.println("Motor Opening");
+    //   } else {
+    //       runMotor("close"); // Start the motor in the close direction
+    //       Serial.println("Motor Closing");
+    //   }
+    //   Serial.println(millis());
+    // }
+
+      if ((millis() - SensorUpdate) >= 50) {
+      SensorUpdate = millis();
+      rfidRead();
+
+      server.handleClient();
+    }
+
+    // analogWrite(PIN_MOTOR_RPM, 50);
+    
+    // digitalWrite(PIN_MOTOR_BRK, HIGH);
+    // Serial.println("HIGH");
+    // delay(1000);
+    // digitalWrite(PIN_MOTOR_BRK, LOW);
+    // Serial.println("LOW");
+    // delay(1000);
+}
+
+
+
+
+
+
+
+
