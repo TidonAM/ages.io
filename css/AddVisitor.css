@@ -1,0 +1,169 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: white;
+    height: 70%;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.container h3 {
+    margin: 0;
+    font-size: 26px;
+    text-align: center;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    font-weight: bold;
+}
+
+.back-button {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    background-color: #dbdbdb;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.form-group-horizontal {
+    display: flex;
+    align-items: center;
+}
+
+.form-group-horizontal label {
+    font-size: 15px;
+    font-weight: bold;
+    width: 30%;
+
+}
+
+.form-group-horizontal input[type="text"] {
+    width: 72%;
+    padding: 8px;
+    font-size: 14px;
+    border: 2px solid #dadada;
+    border-radius: 8px;
+}
+
+.error-message {
+    background-color: #f9f9f9;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2.5px solid #dadada;
+}
+
+.error-message span {
+    color: #d9534f;
+    margin-right: auto;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.close-error {
+    border: 0px;
+    font-weight: bold;
+    background-color: #f9f9f9;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.id-image {
+    width: 100%;
+    height: 150px;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #666666;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-group-vehicle {
+    display: flex;
+    justify-content: space-between; /* Space between both form fields */
+    gap: 20px; /* Add space between the two dropdowns */
+    margin-bottom: 10px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column; /* Stack h3 and select vertically */
+    width: 100%; /* Ensure both fields take equal space */
+}
+
+.form-field h3{
+    text-align: left;
+    margin-bottom: 0px;
+}
+
+select {
+    padding: 5px;
+    font-size: 16px;
+    width: 100%;
+    color: black;
+    border: 2px solid #dbdbdb;
+    border-radius: 8px;
+}
+
+
+.form-group-vehicle h3 {
+    font-size: 14px;
+}
+
+.form-group select {
+    width: 48%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group select:first-child {
+    margin-right: 4%;
+}
+
+.add-visitor-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border: none;
+    font-size: 16px;
+    border-radius: 8px;
+    color: black;
+    font-weight: bold;
+    cursor: not-allowed;
+}
+
+.add-visitor-btn:hover {
+    background-color: #b0b0b0;
+}

@@ -37,11 +37,13 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             max-width: 1200px;
             width: 100%;
+            position:relative;
         }
 
-        h1 {
-            text-align: center;
+        .PageTitle {
             color: #555;
+            left:50px;
+            position:relative;
         }
 
         .toggle-view {
@@ -50,7 +52,6 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
             padding: 12px;
             font-size: 14px;
         }
@@ -159,8 +160,18 @@
 <body>
 
 <div class="container">
-    <h1>Vehicles</h1>
-    <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/'">Go Back</button>
+    <div>
+        <button id="viewLogsButton" style="
+        background-color: gray;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position:absolute;
+        padding: 10px;
+        font-size: 14px;"class="toggle-view-Back" onclick="window.location.href='/'"><</button>
+        <h1 class="PageTitle">Vehicles</h1>
+    </div>
 
     <div class="search-bar">
         <!-- From Date Section -->
