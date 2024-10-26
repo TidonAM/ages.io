@@ -30,13 +30,69 @@
             min-height: 100vh;
         }
 
-        .container {
+        .container.modal {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .info-row {
+            width: 100%; /* Take the full width */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .info-row label {
+            flex: 1; /* Take available space */
+            margin-right: 10px; /* Space between label and input */
+        }
+
+        .info-row input {
+            flex: 2; /* Take more space than the label */
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%; /* Ensure inputs are full width */
+        }
+
+        button {
+            margin-top: 10px; /* Add some space above buttons */
+            align-self: center; /* Center buttons horizontally */
+        }
+
+
+
+        .main-container {
             background-color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             max-width: 1200px;
             width: 100%;
+            display:block;
         }
 
         h1 {
@@ -44,7 +100,7 @@
             color: #555;
             margin-left:50px;
         }
-
+        
         .toggle-view {
             background-color: gray;
             color: white;
@@ -54,10 +110,22 @@
             cursor: pointer;
             /* margin-bottom: 20px; */
             /* font-size: 16px; */
-            width: 100%;
+            width:48%;
             padding: 12px;
             font-size: 14px;
+            margin:0;
         }
+
+        .toggle-view:last-child {
+            margin-right:0;
+        }
+
+        .button-container {
+            width:100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+}
 
         .toggle-view:hover {
             background-color: gray;
@@ -146,7 +214,7 @@
         }
 
         @media (max-width: 480px) {
-            .container {
+            .main-container {
                 padding: 15px;
             }
 
@@ -162,7 +230,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="main-container" id="main-container">
     <button id="viewLogsButton" style="
         background-color: gray;
         color: white;
@@ -191,7 +259,10 @@
             <option value="lot">Lot</option>
         </select>
 
+        <div class="button-container">
         <button class="toggle-view" onclick="search()">Search</button>
+        <button id="addResident" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
+        </div>
     </div>
 
     <table>
@@ -209,6 +280,103 @@
         </tbody>
     </table>
 </div>
+
+<div class="container modal resident" id="container-addresident" style="display: none;">
+    <div class="modal-content">
+        <div class="TitleHold" style="display: flex; align-items: center; width:100%; justify-content: space-between; margin: 0 0 10px 0;">
+            <h2 style="margin:0;">Add Resident</h2>
+            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
+        </div>
+        
+        <div class="info-row">
+            <label for="modal-addr-last-name">Last name:</label>
+            <input type="text" id="modal-addr-last-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-first-name">First name:</label>
+            <input type="text" id="modal-addr-first-name" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-middle-initial">Middle Initial:</label>
+            <input type="text" id="modal-addr-middle-initial" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-street">Street:</label>
+            <input type="text" id="modal-addr-street" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-block">Block:</label>
+            <input type="text" id="modal-addr-block" class="info"></input>
+        </div>
+        <div class="info-row">
+            <label for="modal-addr-lot">Lot:</label>
+            <input type="text" id="modal-addr-lot" class="info"></input>
+        </div>
+        <button id="viewLogsButton" class="toggle-view" onclick="addResident()" style="margin-top: 10px; width:100%;">Add Resident</button>
+    </div>
+</div>
+
+<script>
+
+function modalOpen(type) {
+        const contMain = document.getElementById("main-container");
+        const contAddResident = document.getElementById('container-addresident');
+        if (type == 'addResident') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "flex";
+        }else if (type == 'main') {
+            contMain.style.display = "block";
+            contAddResident.style.display = "none";
+        }
+    }
+
+    async function addResident() {
+        // Gather input values
+        const lastName = document.getElementById('modal-addr-last-name').value;
+        const firstName = document.getElementById('modal-addr-first-name').value;
+        const middleInitial = document.getElementById('modal-addr-middle-initial').value;
+        const street = document.getElementById('modal-addr-street').value;
+        const block = document.getElementById('modal-addr-block').value;
+        const lot = document.getElementById('modal-addr-lot').value;
+
+        if (!lastName || !firstName || !middleInitial || !street || !block || !lot) {
+            alert("Please fill in all fields.");
+            return; // Exit the function if any field is empty
+        }
+    
+        // Create the resident data object
+        const residentData = {
+            archived: false, // Setting archived to false
+            block: block,
+            datetimeAdded: new Date(), // Current date and time as timestamp
+            firstName: firstName,
+            lastName: lastName,
+            lot: lot,
+            middleName: middleInitial,
+            street: street,
+        };
+    
+        // Add the resident data to the 'Residents' collection in Firestore
+        try {
+            await db.collection('Residents').add(residentData);
+            alert("Resident added successfully!");
+            // Optionally, reset the input fields
+            resetForm();
+        } catch (error) {
+            console.error("Error adding resident: ", error);
+            alert("Error adding resident: " + error.message);
+        }
+    }
+    
+    function resetForm() {
+        document.getElementById('modal-addr-last-name').value = '';
+        document.getElementById('modal-addr-first-name').value = '';
+        document.getElementById('modal-addr-middle-initial').value = '';
+        document.getElementById('modal-addr-street').value = '';
+        document.getElementById('modal-addr-block').value = '';
+        document.getElementById('modal-addr-lot').value = '';
+    }
+</script>
 
 <script>
     function isLoading(a) {

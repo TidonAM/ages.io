@@ -509,12 +509,46 @@
 
         <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='pages/resident.html'">Manage Residents</button>
 
-        <div style="display: flex; justify-content: space-between;">
-            <button id="addResident" style="width: 48%;" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
-            <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
+        <div class="visitor-list-container" style="
+                background-color: lightgray;
+                border: 3px solid lightgray; 
+                border-radius: 10px; 
+                margin: 0 0 10px 0; 
+                max-height: 200px; 
+                overflow: hidden; 
+                padding: 10px 5px 5px 5px;
+            ">
+            <header style="font-size: 20px; margin: 0 0 10px 10px; background-color: lightgray; font-weight: bold; color: #555;">Visitor List</header>
+            <div style="
+                    max-height: 150px; 
+                    overflow-y: auto; 
+                    padding-right: 10px;
+                ">
+                <style>
+                    /* Scrollbar styles for WebKit browsers */
+                    ::-webkit-scrollbar {width: 5px;}
+                    ::-webkit-scrollbar-thumb {background-color: #888; border-radius: 6px;}
+                    ::-webkit-scrollbar-thumb:hover {background-color: #555;}
+                    ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
+                    ul {list-style: none; padding: 0; margin: 0;}
+                    li {padding: 10px; background-color: white; color: #555; border: 1px solid lightgray;}
+                    li:hover { background-color: #ccc; }
+                </style>
+                <ul>
+                    <li>Visitor #32912</li>
+                    <li>Visitor #84729</li>
+                    <li>Visitor #12345</li>
+                    <li>Visitor #56789</li>
+                    <li>Visitor #98765</li>
+                    <li>Visitor #34567</li>
+                    <li>Visitor #76543</li>
+                    <li>Visitor #21098</li>
+                    <li>Visitor #45678</li>
+                    <li>Visitor #90876</li>
+                </ul>
+            </div>
         </div>
 
-        <button id="changeViewButton" class="toggle-view" style="display: none;">Change View</button>
 
         <div id="status-info" class="status-info hidden">
             <div class="info-row-top">
@@ -705,6 +739,7 @@
         <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
 
     </div>
+    
 </body>
 
 <script> 
