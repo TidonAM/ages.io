@@ -8,7 +8,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <title>AGES</title>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         .loader {
@@ -19,6 +19,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             height: 120px;
             animation: spin 2s linear infinite;
             }
+
             @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -284,7 +285,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         .status-icons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap:10px;
             /* gap: 10px; */
             /* margin-bottom: 15px; */
@@ -374,6 +375,13 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         .icon-label-temp{
             margin-top: 10px;
+            font-size: 12px; 
+            color: #000; 
+            font-weight: bold;
+        }
+
+        .icon-label-visitor{
+            margin-top: 0px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
@@ -480,18 +488,52 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </div>
         </div>
 
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">View Logs</button>
+        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='pages/logs.html'">View Logs</button>
 
-        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='/vehicle.html'">Manage Vehicles</button>
+        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='pages/vehicle.html'">Manage Vehicles</button>
 
-        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='/resident.html'">Manage Residents</button>
+        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='pages/resident.html'">Manage Residents</button>
 
-        <div style="display: flex; justify-content: space-between;">
-            <button id="addResident" style="width: 48%;" class="toggle-view" onclick="modalOpen('addResident')">Add Resident</button>
-            <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
+        <div class="visitor-list-container" style="
+                background-color: lightgray;
+                border: 3px solid lightgray; 
+                border-radius: 10px; 
+                margin: 0 0 10px 0; 
+                max-height: 200px; 
+                overflow: hidden; 
+                padding: 10px 5px 5px 5px;
+            ">
+            <header style="font-size: 20px; margin: 0 0 10px 10px; background-color: lightgray; font-weight: bold; color: #555;">Visitor List</header>
+            <div style="
+                    max-height: 150px; 
+                    overflow-y: auto; 
+                    padding-right: 10px;
+                ">
+                <style>
+                    /* Scrollbar styles for WebKit browsers */
+                    ::-webkit-scrollbar {width: 5px;}
+                    ::-webkit-scrollbar-thumb {background-color: #888; border-radius: 6px;}
+                    ::-webkit-scrollbar-thumb:hover {background-color: #555;}
+                    ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
+                    ul {list-style: none; padding: 0; margin: 0;}
+                    li {padding: 10px; background-color: white; color: #555; border: 1px solid lightgray;}
+                    li:hover { background-color: #ccc; }
+                </style>
+                <ul>
+                    <li>Visitor #32912</li>
+                    <li>Visitor #84729</li>
+                    <li>Visitor #12345</li>
+                    <li>Visitor #56789</li>
+                    <li>Visitor #98765</li>
+                    <li>Visitor #34567</li>
+                    <li>Visitor #76543</li>
+                    <li>Visitor #21098</li>
+                    <li>Visitor #45678</li>
+                    <li>Visitor #90876</li>
+                </ul>
+            </div>
         </div>
 
-        <button id="changeViewButton" class="toggle-view" style="display: none;">Change View</button>
 
         <div id="status-info" class="status-info hidden">
             <div class="info-row-top">
@@ -509,8 +551,8 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 <div class="info-label">Board</div>
             </div>
             <div class="info-row">
-                <div class="info-label">Temperature</div>
-                <div id="info-label-temp" class="info-value">36°C</div>
+                <div class="info-label">Add Visitor</div>
+                <div id="info-label-visitor" class="info-value">36°C</div>
             </div>
             <div class="info-row">
                 <div class="info-label">RFID Reader Status</div>
@@ -537,6 +579,13 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                     <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
                 </svg>
                 <div id="icon-label-obs" class="icon-label-obs">Blocked</div>
+            </div>
+            <div id="gate-visitor" class="icon-box green" onclick="window.location.href='pages/Add Visitor.html'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 20">
+                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                  </svg>
+                <div id="icon-label-visitor" class="icon-label-visitor">Add Visitor</div>
             </div>
             <!-- <div id="camera-connection" class="icon-box red">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
@@ -643,7 +692,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="rfid">RFID Tag:</label>
             <button class="toggle-view" onclick="modalOpen('waitRFID')" style="margin-bottom: 0px !important; height: 100%;">Scan Now</button>
-            <input id="addvehiclerfid" type="text">
+            <input id="addvehiclerfid" type="text" style="display: none;">
         </div>
         <div class="vehicle-row" style="margin-bottom: 10px;">
             <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
@@ -675,6 +724,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
 
     </div>
+    
 </body>
 
 <script> 
@@ -701,6 +751,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             licensePlate: licensePlate,
             vType: vehicleType,
             vBrand: vehicleBrand,
+            uid: vehicleRfid,
+            vehicleType: vehicleType,
+            vehicleBrand: vehicleBrand,
             uid: vehicleRfid,
             dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
         };
@@ -1101,7 +1154,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                     querySnapshot.forEach(async (doc) => {
                         const data = doc.data();
                         const residentData = await fetchReferenceData(data.owner);
-
                         const lastname = residentData.lastName || 'N/A';  // Assuming the field is 'lastname'
                         const firstname = residentData.firstName || 'N/A';  // Assuming the field is 'firstname'
                         const today = new Date();
@@ -1135,6 +1187,8 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                             await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
                             console.log("Last history is entry, saving as exit");
                         }
+
+                        getLastDetectedDriver();
                     });
                     return true;
                 }
@@ -1271,7 +1325,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </script>
     
 </html>
-
 
 
 

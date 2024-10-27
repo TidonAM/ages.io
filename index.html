@@ -1002,154 +1002,156 @@
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                 <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>        
         `;
-    
-    function getDriverDetails(lastname, firstname, datetime, plate, street){
-        document.getElementById("current-driver-name").innerHTML = lastname+", "+firstname;
-        document.getElementById("current-driver-plate").innerHTML = plate;
-        document.getElementById("current-driver-date").innerHTML = datetime;
-        document.getElementById("current-driver-street").innerHTML = street;
-    }
-    
-    async function fetchReferenceData(ref) {
-        const doc = await ref.get();
-        return doc.exists ? doc.data() : {};
-    }
-    
-    getLastDetectedDriver();
-    
-    async function getLastDetectedDriver() {
-        isLoading(true);
-        const querySnapshot = await db.collection("History")
-        .orderBy("datetime", "desc")  // Order by datetime in descending order
-        .limit(1)  // Get the most recent entry
-        .get();
-        
-        if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];  // Get the first document
-            const data = doc.data();
-            
-            // Fetch vehicle data
-            const vehicleData = await fetchReferenceData(data.vehicle);
-            if (!vehicleData) {
-                throw new Error("Vehicle data not found.");
-            }
-            
-            // Fetch resident data
-            const residentData = await fetchReferenceData(vehicleData.owner);
-            if (!residentData) {
-                throw new Error("Resident data not found.");
-            }
-            
-            let accessStatus = data.entry ? 'Entry' : 'Exit';
-            
-            const lastname = residentData.lastName || 'N/A';  
-            const firstname = residentData.firstName || 'N/A'; 
-            const datetime = formatTimestamp(data.datetime) || 'N/A'; 
-            const plate = vehicleData.licensePlate || 'N/A';  
-            const street = residentData.street || 'N/A';  
-            
-            getDriverDetails(lastname, firstname, datetime, plate, street);
-            isLoading(false);
-            
-        } else {
-            console.log("No history found.");
+
+        function getDriverDetails(lastname, firstname, datetime, plate, street){
+            document.getElementById("current-driver-name").innerHTML = lastname+", "+firstname;
+            document.getElementById("current-driver-plate").innerHTML = plate;
+            document.getElementById("current-driver-date").innerHTML = datetime;
+            document.getElementById("current-driver-street").innerHTML = street;
         }
-    }
-    
-    function formatTimestamp(timestamp) {
-        if (!timestamp) return 'N/A';
-        
-        const date = timestamp.toDate();
-        
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
-    }
-    async function checkRFID(rfidUID) {
-        try {
-            const trimmedRfidUID = String(rfidUID).trim();;
-            console.log("RFIDUID detected is: "+trimmedRfidUID);
-            
-            // Reference to the vehicle collection
-            const vehicleRef = db.collection("Vehicle");
-            
-            
-            // Query to f    the document where uid field matches rfidUID
-            // const q = query(vehicleRef, where("uid", "==", trimmedRfidUID));
-            const querySnapshot = await vehicleRef.where("uid", "==", trimmedRfidUID).get();
-            // Execute the query
-            // const querySnapshot = await getDocs(q);
-            
-            // Check if any document matches the query
-            if (querySnapshot.empty) {
-                console.log("No matching documents.");
-                return false;
+
+        async function fetchReferenceData(ref) {
+            const doc = await ref.get();
+            return doc.exists ? doc.data() : {};
+        }
+
+        getLastDetectedDriver();
+
+        async function getLastDetectedDriver() {
+            isLoading(true);
+            const querySnapshot = await db.collection("History")
+                .orderBy("datetime", "desc")  // Order by datetime in descending order
+                .limit(1)  // Get the most recent entry
+                .get();
+
+            if (!querySnapshot.empty) {
+                const doc = querySnapshot.docs[0];  // Get the first document
+                const data = doc.data();
+
+                // Fetch vehicle data
+                const vehicleData = await fetchReferenceData(data.vehicle);
+                if (!vehicleData) {
+                    throw new Error("Vehicle data not found.");
+                }
+
+                // Fetch resident data
+                const residentData = await fetchReferenceData(vehicleData.owner);
+                if (!residentData) {
+                    throw new Error("Resident data not found.");
+                }
+
+                let accessStatus = data.entry ? 'Entry' : 'Exit';
+
+                const lastname = residentData.lastName || 'N/A';  
+                const firstname = residentData.firstName || 'N/A'; 
+                const datetime = formatTimestamp(data.datetime) || 'N/A'; 
+                const plate = vehicleData.licensePlate || 'N/A';  
+                const street = residentData.street || 'N/A';  
+
+                getDriverDetails(lastname, firstname, datetime, plate, street);
+                isLoading(false);
+
             } else {
-                console.log("Document found!");
-                querySnapshot.forEach(async (doc) => {
-                    const data = doc.data();
-                    const residentData = await fetchReferenceData(data.owner);
-                    const lastname = residentData.lastName || 'N/A';  // Assuming the field is 'lastname'
-                    const firstname = residentData.firstName || 'N/A';  // Assuming the field is 'firstname'
-                    const today = new Date();
-                    const datetime = data.datetime || today.toLocaleString();  // Assuming the field is 'datetime'
-                    const plate = data.licensePlate || 'N/A';  // Assuming the field is 'plate'
-                    const street = residentData.street || 'N/A';  // Assuming the field is 'street'
-                    console.log(data.licensePlate);
-                    
-                    // Save to the History collection with the vehicle reference
-                    const vehicleRefDoc = vehicleRef.doc(doc.id); // Get the reference path
-                    
-                    const historyQuerySnapshot = await db.collection("History")
-                    .where("vehicle", "==", vehicleRefDoc)
-                    .orderBy("datetime", "desc") // Get the most recent entry first
-                    .limit(1) // Limit to one document
-                    .get();
-                    
-                    let lastEntryType = null;
-                    
-                    // Check if there's any previous history for the vehicle
-                    if (!historyQuerySnapshot.empty) {
-                        const lastHistoryDoc = historyQuerySnapshot.docs[0];
-                        lastEntryType = lastHistoryDoc.data().entry;  // Get the entry type of the last history record
-                    }
-                    
-                    // Only save to History if the last entry is false or if there's no previous entry
-                    if (lastEntryType === false || lastEntryType === null) {
-                        await saveToHistory(vehicleRefDoc, true, true); // Save with the entry set to true
-                        console.log("Last history is exit, saving as entry");
-                    } else {
-                        await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
-                        console.log("Last history is entry, saving as exit");
-                    }
-                });
-                return true;
+                console.log("No history found.");
             }
-        } catch (error) {
-            console.error("Error checking RFID in database:", error);
         }
-    }
-    async function saveToHistory(vehicleRef, isResident, entry) {
-        const historyRef = db.collection("History");
-        
-        const historyData = {
-            datetime: new Date(),  // Set to the current date and time
-            entry: entry,          // Set to true or false based on your application logic
-            isResident: isResident, // True if the person is a resident, else false
-            vehicle: vehicleRef    // Reference to the vehicle
-        };
-        
-        try {
-            await historyRef.add(historyData);
-            console.log("History record added successfully:", historyData);
-        } catch (error) {
-            console.error("Error saving to History collection:", error);
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'N/A';
+            
+            const date = timestamp.toDate();
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
-    }
+        async function checkRFID(rfidUID) {
+            try {
+                const trimmedRfidUID = String(rfidUID).trim();;
+                console.log("RFIDUID detected is: "+trimmedRfidUID);
+
+                // Reference to the vehicle collection
+                const vehicleRef = db.collection("Vehicle");
+
+
+                // Query to f    the document where uid field matches rfidUID
+                // const q = query(vehicleRef, where("uid", "==", trimmedRfidUID));
+                const querySnapshot = await vehicleRef.where("uid", "==", trimmedRfidUID).get();
+                // Execute the query
+                // const querySnapshot = await getDocs(q);
+
+                // Check if any document matches the query
+                if (querySnapshot.empty) {
+                    console.log("No matching documents.");
+                    return false;
+                } else {
+                    console.log("Document found!");
+                    querySnapshot.forEach(async (doc) => {
+                        const data = doc.data();
+                        const residentData = await fetchReferenceData(data.owner);
+                        const lastname = residentData.lastName || 'N/A';  // Assuming the field is 'lastname'
+                        const firstname = residentData.firstName || 'N/A';  // Assuming the field is 'firstname'
+                        const today = new Date();
+                        const datetime = data.datetime || today.toLocaleString();  // Assuming the field is 'datetime'
+                        const plate = data.licensePlate || 'N/A';  // Assuming the field is 'plate'
+                        const street = residentData.street || 'N/A';  // Assuming the field is 'street'
+                        console.log(data.licensePlate);
+
+                        // Save to the History collection with the vehicle reference
+                        const vehicleRefDoc = vehicleRef.doc(doc.id); // Get the reference path
+
+                        const historyQuerySnapshot = await db.collection("History")
+                        .where("vehicle", "==", vehicleRefDoc)
+                        .orderBy("datetime", "desc") // Get the most recent entry first
+                        .limit(1) // Limit to one document
+                        .get();
+
+                        let lastEntryType = null;
+
+                        // Check if there's any previous history for the vehicle
+                        if (!historyQuerySnapshot.empty) {
+                            const lastHistoryDoc = historyQuerySnapshot.docs[0];
+                            lastEntryType = lastHistoryDoc.data().entry;  // Get the entry type of the last history record
+                        }
+
+                        // Only save to History if the last entry is false or if there's no previous entry
+                        if (lastEntryType === false || lastEntryType === null) {
+                            await saveToHistory(vehicleRefDoc, true, true); // Save with the entry set to true
+                            console.log("Last history is exit, saving as entry");
+                        } else {
+                            await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
+                            console.log("Last history is entry, saving as exit");
+                        }
+
+                        getLastDetectedDriver();
+                    });
+                    return true;
+                }
+            } catch (error) {
+                console.error("Error checking RFID in database:", error);
+            }
+        }
+        async function saveToHistory(vehicleRef, isResident, entry) {
+            const historyRef = db.collection("History");
+
+            const historyData = {
+                datetime: new Date(),  // Set to the current date and time
+                entry: entry,          // Set to true or false based on your application logic
+                isResident: isResident, // True if the person is a resident, else false
+                vehicle: vehicleRef    // Reference to the vehicle
+            };
+
+            try {
+                await historyRef.add(historyData);
+                console.log("History record added successfully:", historyData);
+            } catch (error) {
+                console.error("Error saving to History collection:", error);
+            }
+        }
 </script>
 
 <script>
@@ -1176,21 +1178,6 @@
                 }
                 
             }
-            //alerted
-            // if (alertBox.classList.contains('hidden')) {
-            //     alertBox.classList.remove('hidden');
-            
-            //     const progressBar = document.getElementById('progress-bar');
-            //     progressBar.style.width = '0%';
-            
-            //     setTimeout(() => {
-            //         progressBar.style.width = '100%';
-            //     }, 10); 
-            
-            //     closeAlertTimeOut = setTimeout(() => {
-            //         alertBox.classList.add('hidden');
-            //     }, 5000);
-            // }
         });
     });
     
