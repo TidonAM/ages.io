@@ -265,20 +265,24 @@
         </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>Middle Name</th>
-                <th>Street</th>
-                <th>Block</th>
-                <th>Lot</th>
-            </tr>
-        </thead>
-        <tbody id="output">
-        </tbody>
-    </table>
+    <div style="overflow: auto;">
+        <table style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Street</th>
+                    <th>Block</th>
+                    <th>Lot</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="output">
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 <div class="container modal resident" id="container-addresident" style="display: none;">
@@ -420,22 +424,28 @@ function modalOpen(type) {
             const row = document.createElement('tr');
             row.id = doc.id;
 
-            row.addEventListener('click', function() {
-                console.log('Row clicked:', doc.id);
-                // You can perform any action here
-                alert(`Resident ID: ${doc.id}`);
-            });
+            // row.addEventListener('click', function() {
+            //     console.log('Row clicked:', doc.id);
+            //     // You can perform any action here
+            //     alert(`Resident ID: ${doc.id}`);
+            // });
 
-            // Add table data
             row.innerHTML = `
-                <td>${data.lastName}</td>
-                <td>${data.firstName || 'N/A'}</td>
-                <td>${data.middleName || 'N/A'}</td>
-                <td>${data.street || 'N/A'}</td>
-                <td>${data.block}</td>
-                <td>${data.lot || 'N/A'}</td>
-            `;
+                        <td>${data.lastName}</td>
+                        <td>${data.firstName || 'N/A'}</td>
+                        <td>${data.middleName || 'N/A'}</td>
+                        <td>${data.street || 'N/A'}</td>
+                        <td>${data.block}</td>
+                        <td>${data.lot || 'N/A'}</td>
+                        <td><button class="edit-btn">Edit</button></td>
+                    `;
             outputDiv.appendChild(row);
+
+            const editButton = row.querySelector('.edit-btn');
+            editButton.addEventListener('click', () => {
+                // Call a function to handle editing of this row
+                handleEdit(row, doc.id); // Pass the row and document ID
+            });
         }
     }
 
@@ -465,8 +475,15 @@ function modalOpen(type) {
                         <td>${data.street || 'N/A'}</td>
                         <td>${data.block}</td>
                         <td>${data.lot || 'N/A'}</td>
+                        <td><button class="edit-btn">Edit</button></td>
                     `;
                     outputDiv.appendChild(row);
+
+                    const editButton = row.querySelector('.edit-btn');
+                    editButton.addEventListener('click', () => {
+                        // Call a function to handle editing of this row
+                        handleEdit(row, doc.id); // Pass the row and document ID
+                    });
                 });
             });
         }
@@ -531,6 +548,61 @@ function modalOpen(type) {
     //         readDataFromFirestore();  // Reset and show all logs if no date range is selected
     //     }
     // }
+
+    async function updateFirestoreData(docId, updatedData) {
+        // Assuming you have a Firestore reference like db.collection("yourCollection")
+        await db.collection("Residents").doc(docId).update(updatedData);
+        console.log("Document updated with ID:", updatedData);
+    }
+
+    function handleEdit(row, docId) {
+    const cells = row.getElementsByTagName('td');
+    
+    // Convert the cells into editable inputs
+    for (let i = 0; i < cells.length - 1; i++) { // Exclude the edit button cell
+        const cellValue = cells[i].innerText;
+        cells[i].innerHTML = `<input type="text" value="${cellValue}" />`; // Use backticks for template literals
+    }
+
+    // Change "Edit" button to "Save"
+    const editButton = row.querySelector('.edit-btn');
+    editButton.innerText = 'Save';
+
+    // Change the button's click handler to save the changes
+    editButton.onclick = async () => {
+        const updatedData = {
+            lastName: cells[0].querySelector('input').value,
+            firstName: cells[1].querySelector('input').value,
+            middleName: cells[2].querySelector('input').value,
+            street: cells[3].querySelector('input').value,
+            block: cells[4].querySelector('input').value,
+            lot: cells[5].querySelector('input').value,
+        };
+
+        console.log("Updated Data: ", updatedData);
+
+        try {
+            // Update Firestore with the new data
+            await updateFirestoreData(docId, updatedData);
+
+            // Update the cell values with the new data
+            cells[0].innerText = updatedData.lastName;
+            cells[1].innerText = updatedData.firstName;
+            cells[2].innerText = updatedData.middleName;
+            cells[3].innerText = updatedData.street;
+            cells[4].innerText = updatedData.block;
+            cells[5].innerText = updatedData.lot;
+
+            // Change the button back to "Edit"
+            editButton.innerText = 'Edit';
+            // Reassign original edit function
+            editButton.onclick = () => handleEdit(row, docId);
+        } catch (error) {
+            console.error("Error updating document: ", error);
+            alert("Failed to update the document. Please try again.");
+        }
+    };
+}
 </script>
 
 </body>

@@ -196,20 +196,24 @@
         <button class="toggle-view" onclick="filterLogs()">Search by Date Range</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>DateTime</th>
-                <th>Vehicle Brand</th>
-                <th>Vehicle Type</th>
-                <th>Resident Owner</th>
-                <th>Access</th>
-                <th>License Plate</th>
-            </tr>
-        </thead>
-        <tbody id="output">
-        </tbody>
-    </table>
+    <div style="overflow: auto;">
+        <table style="width:100%;">
+            <thead>
+                <tr>
+                    <th>DateTime</th>
+                    <th>Vehicle Brand</th>
+                    <th>Vehicle Type</th>
+                    <th>Resident Owner</th>
+                    <th>Access</th>
+                    <th>License Plate</th>
+                </tr>
+            </thead>
+            <tbody id="output">
+            </tbody>
+        </table>
+    </div>
+
+
 </div>
 
 <script>
@@ -239,9 +243,12 @@
         return doc.exists ? doc.data() : {};
     }
 
-    readDataFromFirestore();
+    document.addEventListener("DOMContentLoaded", function() {
+        readDataFromFirestore();
+    });
 
     async function readDataFromFirestore() {
+        console.log("readdata");
         const outputDiv = document.getElementById('output');
         outputDiv.innerHTML = isLoading(true);
 
@@ -290,53 +297,70 @@
             return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
 
-    function filterLogs() {
+    async function filterLogs() {
+        console.log("filterlogs");
+        const outputDiv = document.getElementById('output');
         const fromDateValue = document.getElementById('fromDate').value;
         const toDateValue = document.getElementById('toDate').value;
         outputDiv.innerHTML = isLoading(true);
 
         if (fromDateValue && toDateValue) {
+            console.log("fromto");
             const fromDate = new Date(fromDateValue);
             const toDate = new Date(toDateValue);
 
             const fromTimestamp = firebase.firestore.Timestamp.fromDate(fromDate);
             const toTimestamp = firebase.firestore.Timestamp.fromDate(toDate);
 
-            db.collection("History")
+            console.log(fromTimestamp);
+            console.log(toTimestamp);
+
+            const querySnapshot = await db.collection("History")
                 .where("datetime", ">=", fromTimestamp)
                 .where("datetime", "<=", toTimestamp)
                 .orderBy("datetime", "desc") 
-                .get()
-                .then((querySnapshot) => {
-                    outputDiv.innerHTML = isLoading(false);
-                    const outputDiv = document.getElementById('output');
-                    outputDiv.innerHTML = '';  // Clear current data
+                .get();
 
-                    querySnapshot.forEach(async (doc) => {
-                        const data = doc.data();
-                        
-                        const vehicleData = await fetchReferenceData(data.vehicle);
-                        const residentData = await fetchReferenceData(vehicleData.owner);
+            console.log("Query Snapshot Size:", querySnapshot.size);
 
-                        const row = document.createElement('tr');
-                        let accessStatus = data.entry ? 'Entry' : 'Exit';
+            if (querySnapshot.empty) {
+                console.log("No matching documents.");
+                outputDiv.innerHTML = isLoading(false); // Stop loading
+                outputDiv.innerHTML += '<tr><td colspan="6">No logs found for the selected date range.</td></tr>';
+            } else {
+                
+                outputDiv.innerHTML = isLoading(false);
 
-                        row.innerHTML = `
-                            <td>${formatTimestamp(data.datetime)}</td>
-                            <td>${vehicleData.vBrand || 'N/A'}</td>
-                            <td>${vehicleData.vType || 'N/A'}</td>
-                            <td>${residentData.firstName || 'N/A'} ${residentData.lastName || 'N/A'}</td>
-                            <td>${accessStatus}</td>
-                            <td>${vehicleData.licensePlate || 'N/A'}</td>
-                        `;
+                for (const doc of querySnapshot.docs) { 
+                    console.log("WHAT");
+                    const data = doc.data();
+                            
+                    const vehicleData = await fetchReferenceData(data.vehicle);
+                    const residentData = await fetchReferenceData(vehicleData.owner);
 
-                        outputDiv.appendChild(row);
-                    });
-                });
+                    const row = document.createElement('tr');
+                    let accessStatus = data.entry ? 'Entry' : 'Exit';
+
+                    row.innerHTML = `
+                        <td>${formatTimestamp(data.datetime)}</td>
+                        <td>${vehicleData.vBrand || 'N/A'}</td>
+                        <td>${vehicleData.vType || 'N/A'}</td>
+                        <td>${residentData.firstName || 'N/A'} ${residentData.middleName || 'N/A'} ${residentData.lastName || 'N/A'}</td>
+                        <td>${accessStatus}</td>
+                        <td>${vehicleData.licensePlate || 'N/A'}</td>
+                    `;
+
+                    outputDiv.appendChild(row);
+                }
+                
+            }
+
         } else {
-            readDataFromFirestore();  // Reset and show all logs if no date range is selected
+            readDataFromFirestore();
+            console.log("else");  // Reset and show all logs if no date range is selected
         }
     }
+
 </script>
 
 </body>
