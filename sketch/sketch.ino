@@ -1,12 +1,20 @@
 #include <Arduino.h>
 
+#include <Arduino.h>
+
 #include <WiFi.h>
 #include <WebServer.h>
+#include <NewPing.h>
 #include <NewPing.h>
 #include "index.h"
 #include "logs.h"
 #include "resident.h"
 #include "vehicle.h"
+#include <SoftwareSerial.h>
+SoftwareSerial RFID(5,4);
+
+#define LOCAL_SSID "paconnect"
+#define LOCAL_PASS "f3hrazik"
 #include <SoftwareSerial.h>
 #include <Arduino.h>
 #include <rdm6300.h>
@@ -37,7 +45,15 @@ unsigned long motorStartTime = 0; // Variable to store the start time
 const unsigned long motorDuration = 750; // 3 seconds (3000 milliseconds)
 bool motorRunning = false; // Flag to check if the motor is running
 bool motorOpening = false; // Track motor state (opening/closing)
+// Motor shenanigans
+bool isClosing = false;
+bool isReversing = false;
+unsigned long motorStartTime = 0; // Variable to store the start time
+const unsigned long motorDuration = 750; // 3 seconds (3000 milliseconds)
+bool motorRunning = false; // Flag to check if the motor is running
+bool motorOpening = false; // Track motor state (opening/closing)
 String gateStatus = "0";
+// Overall Sensor Website Update
 // Overall Sensor Website Update
 uint32_t SensorUpdate = 0;
 bool rfidDone = false;
@@ -164,6 +180,7 @@ void SendXML() {
 
   strcpy(XML, "<?xml version = '1.0'?>\n<Data>\n");
 
+  sprintf(buf, "<SD>%d</SD>\n", readUltrasonicSensor());
   sprintf(buf, "<SD>%d</SD>\n", readUltrasonicSensor());
   strcat(XML, buf);
 

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Entry System</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.Vbutton {
+    width: 48%;
+    padding: 10px 20px;
+    border: none;
+    background-color: #dbdbdb;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.Rbutton {
+    width: 48%;
+    padding: 10px 20px;
+    border: none;
+    background-color: #dbdbdb;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.history-detail {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2.5px solid #dadada;
+    
+}
+
+.history-detail h2 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    background-color: #e0e0e0;
+    padding: 10px 15px;
+    border-radius: 10px 10px 0 0;
+    color: #333;
+    text-align: left;
+}
+
+.detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+}
+
+.detail p {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.label {
+    text-align: left;
+    font-weight: bold;
+}
+
+.value {
+    text-align: right;
+}
+
+.error-section {
+    margin-bottom: 20px;
+}
+
+.error {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2.5px solid #dadada;
+}
+
+.error span {
+    color: #d9534f;
+    margin-right: auto;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.close-error {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #000000;
+    cursor: pointer;
+}
+
+
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.control-btn {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    background-color: #4CAF50; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    padding: 10px; 
+    cursor: pointer;
+    width: 30%;
+}
+
+.control-btn svg {
+    margin-bottom: 5px;
+}
+
+
+.open {
+    background-color: #28a745;
+}
+
+.blocked {
+    background-color: #dc3545;
+}
+
+.add-visitor {
+    background-color: #5bc0de;
+}
+
+.visitor-list {
+    margin-bottom: 20px;
+}
+
+.visitor-search-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 10px;
+}
+
+.visitor-search {
+    width: 100%;
+    padding-right: 30px;
+    padding-left: 10px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 2.5px solid #ccc;
+    box-sizing: border-box;
+}
+
+.bi-search {
+    position: absolute;
+    right: 10px;
+    top: 40%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: gray;
+}
+
+.visitor {
+    border: 2px solid #dadada;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.visitor-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.visitor-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.visitor-details {
+    padding-top: 10px;
+    border-top: 1px solid #dadada;
+}
+
+.toggle-visitor { 
+    display: inline-block;
+    font-size: 16px;
+    margin-left: auto;
+    font-weight: bold;
+}
+.close-error {
+    font-size: 16px;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.visitor-open, .visitor-closed {
+    background-color: #f9f9f9;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.visitor-open, .visitor-closed span {
+    margin-left: 8px;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+}
+
+.visitor-item {
+    font-weight: bold;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid #dadada;
+}
+
+.visitor-item span {
+    color: black;
+    margin-right: auto;
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.delete-visitor {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: black;
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.footer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+
+.footer-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin: 5px 0;
+}
+
+@media (max-width: 600px) {
+    .control-btn {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .footer-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="Rbutton">Resident</button>
+            <button class="Vbutton">Visitor</button>
+        </header>
+        
+        <section class="history-detail">
+            <h2>Latest History Detail (Resident)</h2>
+            <div class="detail">
+                <p class="label"><strong>Name</strong></p>
+                <p class="value">Last, First MI.</p>
+
+                <p class="label"><strong>Vehicle Type</strong></p>
+                <p class="value">Sedan</p>
+
+                <p class="label"><strong>DateTime</strong></p>
+                <p class="value">HH:MM:SS | 2024 Sept 16</p>
+
+                <p class="label"><strong>Access</strong></p>
+                <p class="value">Exit</p>
+            </div>
+        </section>
+
+        <section class="error-section">
+            <div class="error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" id="error">
+                    <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
+                </svg>
+                <span>Error</span>
+                <button class="close-error">X</button>
+            </div>
+        </section>
+
+        <section class="controls">
+            <button class="control-btn open">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+                </svg>
+                <span>Open</span>
+            </button>
+            <button class="control-btn blocked">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                  </svg>
+                  <span>Blocked</span>
+            </button>
+            <button class="control-btn add-visitor">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                    <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+                  </svg>
+                  <span>Add Visitor</span>
+            </button>
+        </section>
+
+        <section class="visitor-list">
+            <div class="visitor-search-container">
+                <input type="text" placeholder="VISITOR NUMBER" class="visitor-search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                </svg>
+            </div>
+            <div class="visitor-container">
+                <div id="visitor-item-1" class="visitor visitor-closed">
+                    <div class="visitor-summary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                        <span>Visitor #1</span>
+                        <button class="toggle-visitor" id="toggle-visitor-1">Open</button>
+                        <button class="delete-visitor" data-id="visitor-item-1">X</button>
+                    </div>
+                    <div class="visitor-details" style="display: none;">
+                        <div class="detail">
+                            <p class="label"><strong>I.D. Image</strong></p>
+                            <p class="value">Image</p>
+                    
+                            <p class="label"><strong>Vehicle Type</strong></p>
+                            <p class="value">Bicycle</p>
+                    
+                            <p class="label"><strong>DateTime</strong></p>
+                            <p class="value">HH:MM:SS | 2024 Sept 18</p>
+                    
+                            <p class="label"><strong>Access</strong></p>
+                            <p class="value">Exit</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="visitor-item-2" class="visitor visitor-closed">
+                    <div class="visitor-summary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                        <span>Visitor #2</span>
+                        <button class="toggle-visitor" id="toggle-visitor-2">Open</button>
+                        <button class="delete-visitor" data-id="visitor-item-2">X</button>
+                    </div>
+                    <div class="visitor-details" style="display: none;">
+                        <div class="detail">
+                            <p class="label"><strong>I.D. Image</strong></p>
+                            <p class="value">Image</p>
+                    
+                            <p class="label"><strong>Vehicle Type</strong></p>
+                            <p class="value">Bicycle</p>
+                    
+                            <p class="label"><strong>DateTime</strong></p>
+                            <p class="value">HH:MM:SS | 2024 Sept 18</p>
+                    
+                            <p class="label"><strong>Access</strong></p>
+                            <p class="value">Exit</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="visitor-item-3" class="visitor visitor-closed">
+                    <div class="visitor-summary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                        <span>Visitor #3</span>
+                        <button class="toggle-visitor" id="toggle-visitor-3">Open</button>
+                        <button class="delete-visitor" data-id="visitor-item-3">X</button>
+                    </div>
+                    <div class="visitor-details" style="display: none;">
+                        <div class="detail">
+                            <p class="label"><strong>I.D. Image</strong></p>
+                            <p class="value">Image</p>
+                    
+                            <p class="label"><strong>Vehicle Type</strong></p>
+                            <p class="value">Bicycle</p>
+                    
+                            <p class="label"><strong>DateTime</strong></p>
+                            <p class="value">HH:MM:SS | 2024 Sept 18</p>
+                    
+                            <p class="label"><strong>Access</strong></p>
+                            <p class="value">Exit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>                        
+        </section>
+
+        <footer class="footer">
+            <div class="footer-container">
+                <button class="footer-btn">View History</button>
+                <button class="footer-btn">Management Page</button>
+            </div>
+        </footer>
+    </div>
+    <script>
+document.getElementById('toggle-visitor-1').addEventListener('click', function() {
+    const visitorDetails = document.querySelector('#visitor-item-1 .visitor-details');
+    if (visitorDetails.style.display === 'none') {
+        visitorDetails.style.display = 'block';
+        document.getElementById('toggle-visitor-1').textContent = 'Close';
+    } else {
+        visitorDetails.style.display = 'none';
+        document.getElementById('toggle-visitor-1').textContent = 'Open';
+    }
+});
+
+document.getElementById('toggle-visitor-2').addEventListener('click', function() {
+    const visitorDetails = document.querySelector('#visitor-item-2 .visitor-details');
+    if (visitorDetails.style.display === 'none') {
+        visitorDetails.style.display = 'block';
+        document.getElementById('toggle-visitor-2').textContent = 'Close';
+    } else {
+        visitorDetails.style.display = 'none';
+        document.getElementById('toggle-visitor-2').textContent = 'Open';
+    }
+});
+
+document.getElementById('toggle-visitor-3').addEventListener('click', function() {
+    const visitorDetails = document.querySelector('#visitor-item-3 .visitor-details');
+    if (visitorDetails.style.display === 'none') {
+        visitorDetails.style.display = 'block';
+        document.getElementById('toggle-visitor-3').textContent = 'Close';
+    } else {
+        visitorDetails.style.display = 'none';
+        document.getElementById('toggle-visitor-3').textContent = 'Open';
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.delete-visitor');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const visitorId = this.getAttribute('data-id');
+            const visitorElement = document.getElementById(visitorId);
+            
+            if (visitorElement) {
+                visitorElement.remove();
+                console.log(`Visitor ${visitorId} deleted`);
+            }
+        });
+    });
+});
+
+
+</script>
+</body>
+
+</html>

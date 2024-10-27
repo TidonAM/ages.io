@@ -29,6 +29,12 @@
             align-items: flex-start;
             min-height: 100vh;
         }
+        .button-container {
+            width:100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
         .container {
             background-color: white;
@@ -37,22 +43,57 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             max-width: 1200px;
             width: 100%;
+            display:block;
         }
 
-        h1 {
-            text-align: center;
+        .PageTitle {
             color: #555;
+            left:50px;
+            position:relative;
+        }
+
+
+        .container.modal {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: none;
+        }
+
+        .info-row{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            flex-direction: column;
         }
 
         .toggle-view {
             background-color: gray;
             color: white;
             border: none;
+            /* padding: 10px 20px; */
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
+            /* margin-bottom: 20px; */
+            /* font-size: 16px; */
+            width:48%;
             padding: 12px;
             font-size: 14px;
+            margin:0;
         }
 
         .toggle-view:hover {
@@ -158,9 +199,19 @@
 </head>
 <body>
 
-<div class="container">
-    <h1>Vehicles</h1>
-    <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/'">Go Back</button>
+<div class="container" id="container">
+    <div>
+        <button id="viewLogsButton" style="
+        background-color: gray;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position:absolute;
+        padding: 10px;
+        font-size: 14px;"class="toggle-view-Back" onclick="window.location.href='/'"><</button>
+        <h1 class="PageTitle">Vehicles</h1>
+    </div>
 
     <div class="search-bar">
         <!-- From Date Section -->
@@ -178,7 +229,10 @@
             <option value="licensePlate">License Plate</option>
         </select>
 
+        <div class="button-container">
         <button class="toggle-view" onclick="search()">Search</button>
+        <button id="addVehicle" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
+        </div>
     </div>
 
     <table>
@@ -197,7 +251,88 @@
     </table>
 </div>
 
+<div class="container modal vehicle" id="container-addvehicle" style="display: none;">
+    <div class="modal-content">
+        <div class="TitleHold" style="display: flex; align-items: center; width: 100%; justify-content: space-between; margin: 0 0 10px 0;">
+            <h2 style="margin: 0;">Add Vehicle</h2>
+            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
+        </div>
+        
+        <div class="search-bar">
+            <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
+                <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
+                <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
+            </div>
+        </div>
+        
+        <div class="info-row">
+            <label for="resident">Resident:</label>
+            <select id="resident" style="padding: 10px; width: 220px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+                <option value="na" disabled selected>Search Resident First</option>
+            </select>
+        </div>
+
+        <div class="info-row">
+            <label for="license-plate">License Plate:</label>
+            <input id="license-plate" type="text" style="padding: 10px; width: 200px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+        </div>
+
+        <div class="info-row">
+            <label for="rfid">RFID Tag:</label>
+            <button class="toggle-view" onclick="modalOpen('waitRFID')" style="margin-bottom: 0px !important; height: 100%;">Scan Now</button>
+            <input id="addvehiclerfid" type="text" style="display: none;">
+        </div>
+
+        <div class="vehicle-row" style="margin-bottom: 10px; display:flex; justify-content: space-between; gap:10px;">
+            <div class="info" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; width: 100%;">
+                <label for="vehicle-type">Vehicle Type:</label>
+                <select id="vehicle-type" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Sedan">Sedan</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Truck">Truck</option>
+                    <option value="MC">Motorcycle</option>
+                    <option value="Jeepney">Jeepney</option>
+                </select>
+            </div>
+            <div class="info" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px; width: 100%;">
+                <label for="vehicle-brand">Vehicle Brand:</label>
+                <select id="vehicle-brand" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
+                    <option value="Toyota">Toyota</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                    <option value="Nissan">Nissan</option>
+                    <option value="Suzuki">Suzuki</option>
+                    <option value="Ford">Ford</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Geely">Geely</option>
+                    <option value="NA">N/A</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="addVehicle" class="toggle-view" style="margin-top: 10px; width: 100%;" onclick="addVehicle()">Add Vehicle</button>
+    </div>
+</div>
+
+
+
+
+
 <script>
+
+function modalOpen(type) {
+        const contMain = document.getElementById('container');
+        const contAddVehicle = document.getElementById('container-addvehicle');
+        if (type == 'addVehicle') {
+            contMain.style.display = "none";
+            contAddVehicle.style.display = "flex";
+        } else if (type == 'main') {
+            contMain.style.display = "block";
+            contAddVehicle.style.display = "none";
+        }
+    }
+
     function isLoading(a) {
         if (a === true) {
             return '<tr><td colspan="6"><div style="display: flex; justify-content: center; width: 80%; padding: 10%;"><div class="loader" id="loader" style="height:120px;"></div></div></td></tr>';

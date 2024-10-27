@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Visitor</title>
+    <link rel="stylesheet" href="/css/AddVisitor.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h3 style="margin-left: 45px;">Add Visitor</h3>
+            <button id="viewLogsButton" style="
+        background-color: gray;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position:absolute;
+        padding: 8px 8px 7px 8px;
+        font-size: 14px;"class="toggle-view-Back" onclick="window.location.href='/'"><</button>
+        </div>
+        
+        <div class="form-group-horizontal">
+            <label for="visitor-number">Visitor #</label>
+            <input type="text" id="visitor-number" placeholder="Visitor #" value="Visitor 6" readonly>
+        </div>
+        <div class="error-message">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 32" id="error">
+                <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
+            </svg>
+            <span>Visitor # already used</span>
+            <button class="close-error">X</button>
+        </div>
+
+        <div class="form-group">
+            <label for="id-image">I.D. Image</label>
+            <div class="id-image">
+                Press to Capture
+            </div>
+        </div>
+
+        <div class="form-group-vehicle">
+            <div class="form-field">
+                <h3>Vehicle Type</h3>
+                <select id="vehicle-type">
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="truck">Truck</option>
+                    <option value="motorcycle">Motorcycle</option>
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <h3>Vehicle Brand</h3>
+                <select id="vehicle-brand">
+                    <option value="toyota">Toyota</option>
+                    <option value="honda">Honda</option>
+                    <option value="ford">Ford</option>
+                    <option value="nissan">Nissan</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="add-visitor-btn" disabled>Add Visitor</button>
+    </div>
+</body>
+</html>

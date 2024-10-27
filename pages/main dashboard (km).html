@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Entry System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .Rbutton, .Vbutton, .footer-buttons button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            background-color: #dbdbdb;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .history-detail {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 2.5px solid #dadada;
+            margin-bottom: 20px;
+        }
+
+        .history-detail h2 {
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            color: #333;
+        }
+
+        .detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .detail p {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .error-section {
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2.5px solid #dadada;
+        }
+
+        .error span {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        .close-error {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            width: 30%;
+        }
+
+        .control-btn svg {
+            margin-bottom: 5px;
+        }
+
+        .open { background-color: #f94144; }
+        .blocked { background-color: #f3722c; }
+        .add-visitor { background-color: #90be6d; }
+
+        .visitor-section {
+            margin-bottom: 20px;
+        }
+
+        .visitor-search {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .visitor-search input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .visitor-search button {
+            width: 20%;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .visitor {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        .visitor button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .footer-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 600px) {
+            .control-btn {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="Rbutton">Resident</button>
+            <button class="Vbutton">Visitor</button>
+        </header>
+
+        <section class="history-detail">
+            <h2>Latest History Detail (Resident)</h2>
+            <div class="detail">
+                <p><strong>Name</strong></p><p>Last, First MI.</p>
+                <p><strong>Vehicle Type</strong></p><p>Sedan</p>
+                <p><strong>DateTime</strong></p><p>HH:MM:SS | 2024 Sept 16</p>
+                <p><strong>Access</strong></p><p>Exit</p>
+            </div>
+        </section>
+
+        <section class="error-section">
+            <div class="error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32">
+                    <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
+                </svg>
+                <span>Error</span>
+                <button class="close-error">X</button>
+            </div>
+        </section>
+
+        <section class="controls">
+            <button class="control-btn open">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+                </svg>
+                <span>Open</span>
+            </button>
+            <button class="control-btn blocked">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-ban" viewBox="0 0 16 16">
+                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>
+                </svg>
+                <span>Blocked</span>
+            </button>
+            <button class="control-btn add-visitor">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+                    <path d="M12.5 16a3.5 3.5 0 0 0-7 0h7zM8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6-3v2h2a.5.5 0 0 1 0 1h-2v2a.5.5 0 0 1-1 0v-2h-2a.5.5 0 0 1 0-1h2V6a.5.5 0 0 1 1 0z"/>
+                </svg>
+                <span>Add Visitor</span>
+            </button>
+        </section>
+
+        <section class="visitor-section">
+            <div class="visitor-search">
+                <input type="text" placeholder="Search Visitor">
+                <button>Find</button>
+            </div>
+
+            <div class="visitor">
+                <span>Michael Jordan</span>
+                <button>Remove</button>
+            </div>
+
+        
+
+        </section>
+
+        <footer class="footer-buttons">
+            <button>View History</button>
+            <button>Management Page</button>
+        </footer>
+    </div>
+</body>
+</html>
