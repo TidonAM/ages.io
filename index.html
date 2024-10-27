@@ -1185,6 +1185,8 @@
                             await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
                             console.log("Last history is entry, saving as exit");
                         }
+
+                        getLastDetectedDriver();
                     });
                     return true;
                 }
@@ -1246,21 +1248,6 @@
                 }
                 
             }
-            //alerted
-            // if (alertBox.classList.contains('hidden')) {
-            //     alertBox.classList.remove('hidden');
-
-            //     const progressBar = document.getElementById('progress-bar');
-            //     progressBar.style.width = '0%';
-
-            //     setTimeout(() => {
-            //         progressBar.style.width = '100%';
-            //     }, 10); 
-
-            //     closeAlertTimeOut = setTimeout(() => {
-            //         alertBox.classList.add('hidden');
-            //     }, 5000);
-            // }
         });
     });
 
