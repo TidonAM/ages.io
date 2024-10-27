@@ -108,15 +108,15 @@ body {
 
 .form-group-vehicle {
     display: flex;
-    justify-content: space-between; /* Space between both form fields */
-    gap: 20px; /* Add space between the two dropdowns */
+    justify-content: space-between;
+    gap: 20px;
     margin-bottom: 10px;
 }
 
 .form-field {
     display: flex;
-    flex-direction: column; /* Stack h3 and select vertically */
-    width: 100%; /* Ensure both fields take equal space */
+    flex-direction: column;
+    width: 100%;
 }
 
 .form-field h3{

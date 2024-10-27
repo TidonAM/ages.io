@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
-    <!---
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-    -->
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         .loader {
@@ -18,12 +16,12 @@
             width: 120px;
             height: 120px;
             animation: spin 2s linear infinite;
-            }
-
-            @keyframes spin {
+        }
+        
+        @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-            }
+        }
         .resident input[type="text"] {
             padding: 10px;
             font-size: 16px;
@@ -38,6 +36,14 @@
             border-radius: 5px;
             width: 100%;
         }
+        select {
+            padding: 5px;
+            font-size: 16px;
+            width: 100%;
+            color: black;
+            border: 2px solid #dbdbdb;
+            border-radius: 8px;
+        }
         .search-bar {
             display: flex;
             justify-content: space-between;
@@ -46,11 +52,11 @@
             gap: 10px;
             margin-top:10px;
         }
-
+        
         .flex {
             display: flex;
         }
-
+        
         .search-bar label {
             font-size: 16px;
             color: #555;
@@ -60,6 +66,9 @@
             display: flex;
             width: 100%;
             align-items: center;
+        }
+        p span{
+            text-transform: uppercase;
         }
         h4 {
             margin-bottom: 15px;
@@ -74,7 +83,7 @@
             justify-content: space-between;
             gap: 10px;
         }
-
+        
         .vehicle-row .info {
             flex-basis: 48%;
         }
@@ -84,23 +93,23 @@
             margin: 0;
             padding: 0;
         }
-
+        
         .navbar-title{
             font-weight: bold;
         }
-
+        
         .burger{
             background: none;
             border: none;
             color: orange;
         }
-
+        
         .profile{
             background: none;
             border: none;
             color: orange;
         }
-
+        
         .status-icons{
             justify-items: center;
         }
@@ -112,17 +121,17 @@
             background-color: #c6ec8d;
             padding: 10px;
         }
-
+        
         .navbar-item img {
             width: 24px;
             height: 24px;
         }
-
+        
         .navbar-title {
             font-size: 20px;
             color: black;
         }
-
+        
         /* Container Styles */
         .container {
             max-width: 400px;
@@ -135,7 +144,7 @@
             flex-direction: column;
             justify-content: flex-end;
         }
-
+        
         .header {
             display: flex;
             justify-content: space-between;
@@ -145,13 +154,13 @@
             border-radius: 10px;
             margin-bottom: 10px;
         }
-
+        
         .header h1 {
             margin: 0;
             font-size: 20px;
             color: black;
         }
-
+        
         .menu-btn, .search-btn {
             background: none;
             border: none;
@@ -159,7 +168,7 @@
             width: 20px;
             height: 20px;
         }
-
+        
         .image-box {
             width: 100%;
             height: 200px;
@@ -169,13 +178,13 @@
             align-items: center;
             border-radius: 10px;
         }
-
+        
         .image-box img {
             max-width: 100%;
             max-height: 100%;
             border-radius: 10px;
         }
-
+        
         .toggle-view{
             background-color: lightgray;
             border: none;
@@ -183,11 +192,11 @@
             font: inherit;
             border-radius: 10px;
         }
-
+        
         .toggle-view:active {
             background-color: gray;
         }
-
+        
         .alert-cont {
             display: flex;
             justify-content: space-between;
@@ -195,7 +204,7 @@
             width: 95%;
             padding: 0px 10px 10px 10px;
         }
-
+        
         .alert-box {
             display: flex;
             flex-direction: column;
@@ -217,19 +226,19 @@
             font-size: 14px;
             padding-left: 10px;
         }
-
+        
         .hidden {
             display: none !important;
         }
-
+        
         .toggle-view {
             margin-bottom: 10px;
         }
-
+        
         .toggle-view:hover {
             background-color: darkgray;
         }
-
+        
         .close-alert {
             background: none;
             border: none;
@@ -237,13 +246,13 @@
             cursor: pointer;
             color: #b30000;
         }
-
+        
         .status-info {
             margin-bottom: 15px;
             border: 3px solid lightgray;
             border-radius: 8px;
         }
-
+        
         .info-row {
             display: flex;
             justify-content: space-between;
@@ -251,7 +260,7 @@
             align-items: center;
             padding: 10px;
         }
-
+        
         .info-row2 {
             display: flex;
             justify-content: space-between;
@@ -259,14 +268,14 @@
             padding: 10px;
             background-color: lightgray;
         }
-
+        
         .info-row-top {
             display: flex;
             justify-content: space-between;
             padding: 10px;
             background-color: lightgray;
         }
-
+        
         .info-row3{
             display: flex;
             justify-content: space-between;
@@ -278,11 +287,37 @@
             font-weight: bold;
             color: #555;
         }
-
+        
         .info-value {
             color: #555;
         }
-
+        
+        .error-message {
+            background-color: #f9f9f9;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2.5px solid #dadada;
+        }
+        
+        .error-message span {
+            color: #d9534f;
+            margin-right: auto;
+            margin-left: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .close-error {
+            border: 0px;
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        
         .status-icons {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -290,7 +325,18 @@
             /* gap: 10px; */
             /* margin-bottom: 15px; */
         }
-
+        
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .form-field h3{
+            text-align: left;
+            font-size: 15px;
+        }
+        
         .icon-box {
             width: 50px;
             height: 50px;
@@ -300,7 +346,53 @@
             border-radius: 10px;
             cursor: pointer;
         }
-
+        .form-group {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .id-image {
+            width: 100%;
+            height: 150px;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: #666666;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .form-group-horizontal {
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group-horizontal label {
+            font-size: 15px;
+            font-weight: bold;
+            width: 30%;
+            
+        }
+        
+        .form-group-horizontal input[type="number"] {
+            width: 72%;
+            padding: 8px;
+            font-size: 14px;
+            border: 2px solid #dadada;
+            border-radius: 8px;
+            margin: 0 0 10px 0;
+        }
+        
+        .form-group-vehicle {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
         .icon-box.green {
             background-color: #ccffcc;
             height: 80px;
@@ -310,35 +402,35 @@
             align-items: center;
             text-align: center;
         }
-
+        
         .icon-label-online{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-scanner{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-camol{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-sensor{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-box.red {
             background-color: #ffcccc;
             height: 80px;
@@ -348,21 +440,21 @@
             align-items: center;
             text-align: center;
         }
-
+        
         .icon-label-gate{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-obs{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-box.yellow {
             background-color: #ffffcc;
             height: 80px;
@@ -372,50 +464,50 @@
             align-items: center;
             text-align: center;
         }
-
+        
         .icon-label-temp{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-visitor{
             margin-top: 0px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-label-signal{
             margin-top: 10px;
             font-size: 12px; 
             color: #000; 
             font-weight: bold;
         }
-
+        
         .icon-box img {
             max-width: 30px;
             max-height: 30px;
         }
-
+        
         .icon-box:hover {
             transform: scale(1.2);
             transition: transform 0.2s;
         }
-
+        
         .driver-info {
             margin: 10px 0;
             border: 3px solid lightgray;
             border-radius: 8px;
         }
-
+        
         .driver-info .info-row {
             display: flex;
             justify-content: space-between;
             /* margin: 5px 0; */
         }
-
+        
         #progress-container {
             width: 100%;
             height: 10px;
@@ -423,7 +515,7 @@
             position: relative;
             overflow: hidden;
         }
-
+        
         #progress-bar {
             width: 100%;
             height: 100%;
@@ -438,63 +530,63 @@
     <!-- Main Container -->
     <div class="container main" id="container-main">
         
-        <div class="image-box">
-            <img src="hillcrest.webp" alt="Gate Image">
-            <!-- <iframe src="http://192.168.1.54" width="100%" height="600" id="myIframe" frameborder="0" allowfullscreen></iframe> -->
-        </div>
-
-        <div class="driver-info">
-            <div class="info-row">
-                <div class="info-label">Last Detected Driver Details</div>
+            <div class="image-box">
+                <img src="hillcrest.webp" alt="Gate Image">
+                <!-- <iframe src="http://192.168.1.54" width="100%" height="600" id="myIframe" frameborder="0" allowfullscreen></iframe> -->
             </div>
-            <div id="LastDriverElement" class="flex" style="flex-direction: column;">
-                <div class="info-row2">
-                    <div class="info-label">Name</div>
-                    <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
-                </div>
+            
+            <div class="driver-info">
                 <div class="info-row">
-                    <div class="info-label">Plate Number</div>
-                    <div id="current-driver-plate" class="info-value">ABC123</div>
+                    <div class="info-label">Last Detected Driver Details</div>
                 </div>
-                <div class="info-row3">
-                    <div class="info-label">Entry Info</div>
-                    <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
+                <div id="LastDriverElement" class="flex" style="flex-direction: column;">
+                    <div class="info-row2">
+                        <div class="info-label">Name</div>
+                        <div id="current-driver-name" class="info-value">Dela Cruz, Juan</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Plate Number</div>
+                        <div id="current-driver-plate" class="info-value">ABC123</div>
+                    </div>
+                    <div class="info-row3">
+                        <div class="info-label">Entry Info</div>
+                        <div id="current-driver-date" class="info-value">hh:mm:ss | yyyy mm dd</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Street</div>
+                        <div id="current-driver-street" class="info-value">Molave Street</div>
+                    </div>
                 </div>
-                <div class="info-row">
-                    <div class="info-label">Street</div>
-                    <div id="current-driver-street" class="info-value">Molave Street</div>
+                
+                <div id="LastDriverLoader" class="hidden" style="justify-content: center; width: 80%; padding: 10%;">
+                    <div class="loader" id="loader" style="height:120px;">
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div id="alert-box" class="alert-box hidden">
+                <div class="alert-cont">
+                    <div class="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                        </svg>
+                        <p>Error!</p>
+                    </div>
+                    <button id="close-alert" class="close-alert">✕</button>
+                </div>
+                <div id="progress-container">
+                    <div id="progress-bar"></div>
                 </div>
             </div>
-
-            <div id="LastDriverLoader" class="hidden" style="justify-content: center; width: 80%; padding: 10%;">
-                <div class="loader" id="loader" style="height:120px;">
-                </div>
-            </div>
-
-        </div>
-
-        <div id="alert-box" class="alert-box hidden">
-            <div class="alert-cont">
-                <div class="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4m.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
-                    </svg>
-                    <p>Error!</p>
-                </div>
-                <button id="close-alert" class="close-alert">✕</button>
-            </div>
-            <div id="progress-container">
-                <div id="progress-bar"></div>
-            </div>
-        </div>
-
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='pages/logs.html'">View Logs</button>
-
-        <button id="manageResidentsButton" class="toggle-view" onclick="window.location.href='pages/vehicle.html'">Manage Vehicles</button>
-
-        <button id="manageVehiclesButton" class="toggle-view" onclick="window.location.href='pages/resident.html'">Manage Residents</button>
-
-        <div class="visitor-list-container" style="
+            
+            <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='pages/logs.html'">View Logs</button>
+            
+            <button id="manageResidentsButton" class="toggle-view" style="display:none" onclick="window.location.href='pages/vehicle.html'">Manage Vehicles</button>
+            
+            <button id="manageVehiclesButton" class="toggle-view" style="display:none" onclick="window.location.href='pages/resident.html'">Manage Residents</button>
+            
+            <div class="visitor-list-container" style="
                 background-color: lightgray;
                 border: 3px solid lightgray; 
                 border-radius: 10px; 
@@ -502,406 +594,181 @@
                 max-height: 200px; 
                 overflow: hidden; 
                 padding: 10px 5px 5px 5px;
-            ">
+                ">
             <header style="font-size: 20px; margin: 0 0 10px 10px; background-color: lightgray; font-weight: bold; color: #555;">Visitor List</header>
-            <div style="
+                <div style="
                     max-height: 150px; 
                     overflow-y: auto; 
                     padding-right: 10px;
-                ">
-                <style>
-                    /* Scrollbar styles for WebKit browsers */
-                    ::-webkit-scrollbar {width: 5px;}
-                    ::-webkit-scrollbar-thumb {background-color: #888; border-radius: 6px;}
-                    ::-webkit-scrollbar-thumb:hover {background-color: #555;}
-                    ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
-                    ul {list-style: none; padding: 0; margin: 0;}
-                    li {padding: 10px; background-color: white; color: #555; border: 1px solid lightgray;}
-                    li:hover { background-color: #ccc; }
-                </style>
-                <ul>
-                    <li>Visitor #32912</li>
-                    <li>Visitor #84729</li>
-                    <li>Visitor #12345</li>
-                    <li>Visitor #56789</li>
-                    <li>Visitor #98765</li>
-                    <li>Visitor #34567</li>
-                    <li>Visitor #76543</li>
-                    <li>Visitor #21098</li>
-                    <li>Visitor #45678</li>
-                    <li>Visitor #90876</li>
-                </ul>
+                    ">
+                        <style>
+                            /* Scrollbar styles for WebKit browsers */
+                            ::-webkit-scrollbar {width: 5px;}
+                            ::-webkit-scrollbar-thumb {background-color: #888; border-radius: 6px;}
+                            ::-webkit-scrollbar-thumb:hover {background-color: #555;}
+                            ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
+                            ul {list-style: none; padding: 0; margin: 0;}
+                            li {padding: 10px; background-color: white; color: #555; border: 1px solid lightgray;}
+                            li:hover { background-color: #ccc; }
+                        </style>
+                    <ul id="visitlist">
+                
+                    </ul>
+                </div>
             </div>
+    <div id="status-icons" class="status-icons">
+        <div id="gate-position" class="icon-box red icon-clickable">
+            <svg id="svgGatePosition" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
+            </svg>
+            <div id="icon-label-gate" class="icon-label-gate">Closed</div>
         </div>
-
-<!---
-        <div id="status-info" class="status-info hidden">
-            <div class="info-row-top">
-                <div class="info-label">Gate Status</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Position</div>
-                <div id="info-label-gate" class="info-value">Closed</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Obstacle Detection</div>
-                <div id="info-label-obs" class="info-value">Blocked</div>
-            </div>
-            <div class="info-row2">
-                <div class="info-label">Board</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">Add Visitor</div>
-                <div id="info-label-visitor" class="info-value">36°C</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">RFID Reader Status</div>
-                <div id="info-label-rfid" class="info-value">Online</div>
-            </div>
+        <div id="gate-obstacle" class="icon-box red">
+            <svg id="svgGateObstacle" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
+            </svg>
+            <div id="icon-label-obs" class="icon-label-obs">Blocked</div>
         </div>
-    -->
-        <div id="status-icons" class="status-icons">
-            <!-- <div id="gate-connection" class="icon-box green">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed-fill" viewBox="0 0 16 16">
-                    <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
-                </svg>
-                <div class="icon-label-online">Online</div>
-            </div> -->
-            <div id="gate-position" class="icon-box red icon-clickable">
-                <svg id="svgGatePosition" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
-                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
-                </svg>
-                <div id="icon-label-gate" class="icon-label-gate">Closed</div>
-            </div>
-            <div id="gate-obstacle" class="icon-box red">
-                <svg id="svgGateObstacle" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                    <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
-                </svg>
-                <div id="icon-label-obs" class="icon-label-obs">Blocked</div>
-            </div>
-            <div id="gate-visitor" class="icon-box green" onclick="modalOpen('visitorModal')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 20">
-                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                    <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
-                  </svg>
-                <div id="icon-label-visitor" class="icon-label-visitor">Add Visitor</div>
-            </div>
-            <!-- <div id="camera-connection" class="icon-box red">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2zm11.5 5.175 3.5 1.556V4.269l-3.5 1.556zM2 4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/>
-                </svg>
-                <div class="icon-label-camol">Offline</div>
-            </div> -->
-            <!-- <div id="board-temp" class="icon-box green">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
-                    <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
-                    <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1"/>
-                </svg>
-                <div id="icon-label-temp" class="icon-label-temp">Temp</div>
-            </div>
-            <div id="rfid-connection" class="icon-box green">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 122.88 122.02"><title>rfid</title>
-                    <path d="M62.19,48.52a9.83,9.83,0,0,0-.25-19.61h-1a9.83,9.83,0,0,0,0,19.63h1.25ZM24.53,91q6,0,9.29,2.7a8.86,8.86,0,0,1,3.24,7.16q0,5.11-3.17,7.7c-2.11,1.72-5.19,2.58-9.22,2.58l-1.08.56H18.42V122H7.72V91Zm-1.88,13.52a4.41,4.41,0,0,0,2.6-.63,3.27,3.27,0,0,0,0-4.44,4.26,4.26,0,0,0-2.6-.66H18.42v5.73Zm6.47,2.3L38.79,122H26.92l-7.23-13.56,9.43-1.6Zm37.37-7.79H51.75v4.32H63.67v8H51.75V122H40.81V91H66.49v8Zm14.08-8v31H69.63V91Zm19.9,0q7.27,0,11,4t3.71,11.45q0,7.36-3.71,11.43t-11,4.06H85.26V91Zm-1.55,23.19c2,0,3.38-.62,4.06-1.86a12.78,12.78,0,0,0,1-5.84,12.78,12.78,0,0,0-1-5.84c-.68-1.24-2-1.86-4.06-1.86H96.19v15.4ZM41.57,21.77a4.5,4.5,0,0,0-.51-6.2l-.29-.23a4.4,4.4,0,0,0-3.14-.86,4.45,4.45,0,0,0-2.9,1.5,1.79,1.79,0,0,0-.22.25,41.63,41.63,0,0,0-6.45,10.92A31.56,31.56,0,0,0,28,50.43a40.44,40.44,0,0,0,6.49,10.93,4.49,4.49,0,0,0,6.31.65h0a4.5,4.5,0,0,0,.65-6.32h0a31.57,31.57,0,0,1-5-8.36,22.93,22.93,0,0,1-1.65-8.51,23.32,23.32,0,0,1,1.71-8.56,32.39,32.39,0,0,1,5.08-8.49ZM22.4,7.54a1.37,1.37,0,0,0,.19-.23,4.45,4.45,0,0,0-.43-6.1,1.37,1.37,0,0,0-.22-.2,4.48,4.48,0,0,0-6.18.5A67.93,67.93,0,0,0,3.84,19.91,46.8,46.8,0,0,0,0,39,46.8,46.8,0,0,0,4.47,58,68.05,68.05,0,0,0,17,76.05l.11.11a4.48,4.48,0,0,0,6.23.08l.11-.1a4.56,4.56,0,0,0,1.31-3,4.48,4.48,0,0,0-1.22-3.21A59.49,59.49,0,0,1,12.72,54.48,38.08,38.08,0,0,1,9,38.89a38.45,38.45,0,0,1,3.23-15.72A59,59,0,0,1,22.4,7.54ZM81.31,21.77a4.5,4.5,0,0,1,.51-6.2l.28-.23a4.49,4.49,0,0,1,6.05.64,1.27,1.27,0,0,1,.21.25,41.4,41.4,0,0,1,6.46,10.92,31.56,31.56,0,0,1,.07,23.28A40.44,40.44,0,0,1,88.4,61.36a4.49,4.49,0,0,1-6.31.65h0a4.48,4.48,0,0,1-1.63-3,4.55,4.55,0,0,1,1-3.3h0a31.57,31.57,0,0,0,5-8.36,22.93,22.93,0,0,0,1.65-8.51,23.32,23.32,0,0,0-1.71-8.56,32.39,32.39,0,0,0-5.08-8.49ZM100.48,7.54a1.37,1.37,0,0,1-.19-.23,4.45,4.45,0,0,1,.43-6.1,1.37,1.37,0,0,1,.22-.2,4.48,4.48,0,0,1,6.18.5A67.93,67.93,0,0,1,119,19.91,46.8,46.8,0,0,1,122.87,39a46.8,46.8,0,0,1-4.46,19,68.05,68.05,0,0,1-12.52,18l-.11.11a4.48,4.48,0,0,1-6.23.08l-.11-.1a4.56,4.56,0,0,1-1.31-3,4.48,4.48,0,0,1,1.22-3.21,59.49,59.49,0,0,0,10.81-15.42,38.08,38.08,0,0,0,3.76-15.59,38.45,38.45,0,0,0-3.23-15.72A59,59,0,0,0,100.48,7.54Z"/>
-                </svg>
-                <div class="icon-label-scanner">Online</div>
-            </div> -->
-            <!-- <div id="board-signal" class="icon-box yellow">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
-                    <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
-                </svg>
-                <div id="icon-label-signal" class="icon-label-signal">Signal</div>
-            </div> -->
-            <!-- <div id="obstacle-connection" class="icon-box green">
-                <svg class="svg-icon" width="30" height="30" fill="currentColor" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M492.251429 907.337143H245.76a91.428571 91.428571 0 0 1-91.428571-91.428572v-601.6a91.428571 91.428571 0 0 1 91.428571-91.428571h246.491429a91.428571 91.428571 0 0 1 91.428571 91.428571v602.331429a91.428571 91.428571 0 0 1-91.428571 90.697143zM245.76 178.285714a36.571429 36.571429 0 0 0-36.571429 36.571429v601.782857a36.571429 36.571429 0 0 0 36.571429 36.571429h246.491429a36.571429 36.571429 0 0 0 36.571428-36.571429V214.308571a36.571429 36.571429 0 0 0-36.571428-36.571428z" /><path d="M334.262857 302.994286H182.857143a27.428571 27.428571 0 0 1 0-54.857143h151.771428a27.428571 27.428571 0 0 1 0 54.857143zM277.028571 420.571429H182.857143a27.428571 27.428571 0 0 1 0-54.857143h94.537143a27.428571 27.428571 0 0 1 0 54.857143zM334.262857 537.6H182.857143a27.428571 27.428571 0 1 1 0-54.857143h151.771428a27.428571 27.428571 0 0 1 0 54.857143zM277.028571 654.994286H182.857143a27.428571 27.428571 0 1 1 0-54.857143h94.537143a27.428571 27.428571 0 0 1 0 54.857143zM334.262857 772.388571H182.857143a27.428571 27.428571 0 1 1 0-54.857142h151.771428a27.428571 27.428571 0 0 1 0 54.857142zM676.571429 663.405714a27.428571 27.428571 0 0 1-19.382858-46.811428 142.994286 142.994286 0 0 0 0-202.24A27.428571 27.428571 0 0 1 694.857143 375.588571a197.851429 197.851429 0 0 1 0 279.771429 27.977143 27.977143 0 0 1-18.285714 8.045714z"/><path d="M778.971429 766.171429a27.062857 27.062857 0 0 1-19.382858-8.045715 27.611429 27.611429 0 0 1 0-38.765714 288.548571 288.548571 0 0 0 0-407.954286 27.611429 27.611429 0 0 1 0-38.765714 27.245714 27.245714 0 0 1 38.765715 0 343.222857 343.222857 0 0 1 0 485.485714 26.514286 26.514286 0 0 1-19.382857 8.045715z"/>
-                </svg>
-                <div class="icon-label-sensor">Online</div>
-            </div> -->
+        <div id="gate-visitor" class="icon-box green" onclick="modalOpen('visitorModal')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 20">
+                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+            </svg>
+            <div id="icon-label-visitor" class="icon-label-visitor">Add Visitor</div>
         </div>
     </div>
-<!--
-    <div class="container modal resident" id="container-addresident" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>Add Resident</h2>
-            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-last-name">Last name:</label>
-            <input type="text" id="modal-addr-last-name" class="info"></input>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-first-name">First name:</label>
-            <input type="text" id="modal-addr-first-name" class="info"></input>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-middle-initial">Middle Initial:</label>
-            <input type="text" id="modal-addr-middle-initial" class="info"></input>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-street">Street:</label>
-            <input type="text" id="modal-addr-street" class="info"></input>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-block">Block:</label>
-            <input type="text" id="modal-addr-block" class="info"></input>
-        </div>
-        <div class="info-row">
-            <label for="modal-addr-lot">Lot:</label>
-            <input type="text" id="modal-addr-lot" class="info"></input>
-        </div>
-        <button id="viewLogsButton" class="toggle-view" onclick="addResident()" style="margin-top: 10px;">Add Resident</button>
+    <button class="LoginAsAdmin" id="LoginAsAdmin" onclick="openAdminLoginModal()" style="display:flex; width:100%; padding: 10px; background-color: gray; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Login as admin?</button>
+</div>
+<div class="container" id="container-visitorModal" style="display:none;position:relative;background-color: white;width: 90%;max-width: 400px;padding: 20px;border-radius: 8px;box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+    <div class="vheader" style="display: flex;justify-content: space-between;align-items: center;font-weight: bold;margin: 0 0 10px 0;">
+        <h3 style="margin: 0px !important;font-size: 26px;text-align: center;">Add Visitor</h3>
+        <button id="viewLogsButton" style="background-color: gray;color: white;border: none;border-radius: 5px;cursor: pointer;padding: 8px 8px 7px 8px;font-size: 14px;height: 25%;margin: 0 0 0 0;"
+        class="toggle-view-Back" onclick="window.location.href='/'">x</button>
     </div>
 
-    <div class="container modal" id="container-waitrfid" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; gap: 10%; width: 100%;">
-                <div class="loader" id="loader" style="height:20px; width: 20px;"></div>
-                <p style="display: flex; align-self: center;">Waiting For RFID...</p>
-            </div>
-
-            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('addVehicle')">X</button>
-        </div>
-        
+    <div class="form-group-horizontal">
+        <label for="visitor-number">Visitor #</label>
+        <input type="number" id="visitor-number" placeholder="#" value="">
     </div>
--->
-<!--
-    <div class="container modal vehicle" id="container-addvehicle" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>Add Vehicle</h2>
-            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
+    <!-- <div class="error-message">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 32" id="error">
+            <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
+        </svg>
+        <span>Visitor # already used</span>
+        <button class="close-error">X</button>
+    </div> -->
+
+    <div class="form-group">
+        <label for="id-image">I.D. Image</label>
+        <div class="id-image">
+            <input type="image" id="visitorimage">
         </div>
-        <div class="search-bar">
-            // From Date Section
-            <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
-                <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
-                <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
-            </div>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label for="resident">Resident:</label>
-            <select id="resident" style="padding: 10px; width: 220px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
-                <option value="na" disabled selected>Search Resident First</option>
+    </div>
+
+    <div class="form-group-vehicle" style="display: flex;justify-content: space-between;gap: 20px;margin-bottom: 10px;">
+        <div class="form-field">
+            <h3 style="margin: 0px !important;">Vehicle Type</h3>
+            <select id="vehicle-type">
+                <option value="sedan">Sedan</option>
+                <option value="suv">SUV</option>
+                <option value="truck">Truck</option>
+                <option value="motorcycle">Motorcycle</option>
             </select>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label for="license-plate">License Plate:</label>
-            <input id="license-plate" type="text" style="padding: 10px; width: 200px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
-            </input>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label for="rfid">RFID Tag:</label>
-            <button class="toggle-view" onclick="modalOpen('waitRFID')" style="margin-bottom: 0px !important; height: 100%;">Scan Now</button>
-            <input id="addvehiclerfid" type="text" style="display: none;">
-        </div>
-        <div class="vehicle-row" style="margin-bottom: 10px;">
-            <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <label for="vehicle-type">Vehicle Type:</label>
-                <select id="vehicle-type" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
-                    <option value="Sedan">Sedan</option>
-                    <option value="SUV">SUV</option>
-                    <option value="Truck">Truck</option>
-                    <option value="MC">Motorcycle</option>
-                    <option value="Jeepney">Jeepney</option>
-                </select>
-            </div>
-            <div class="info" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <label for="vehicle-brand">Vehicle Brand:</label>
-                <select id="vehicle-brand" style="padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px;">
-                    <option value="Toyota">Toyota</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Mitsubishi">Mitsubishi</option>
-                    <option value="Nissan">Nissan</option>
-                    <option value="Suzuki">Suzuki</option>
-                    <option value="Ford">Ford</option>
-                    <option value="Hyundai">Hyundai</option>
-                    <option value="Kia">Kia</option>
-                    <option value="Geely">Geely</option>
-                    <option value="NA">N/A</option>
-                </select>
-            </div>
-        </div>
-        <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
 
+        <div class="form-field">
+            <h3 style="margin: 0px !important;">Vehicle Brand</h3>
+            <select id="vehicle-brand">
+                <option value="toyota">Toyota</option>
+                <option value="honda">Honda</option>
+                <option value="ford">Ford</option>
+                <option value="nissan">Nissan</option>
+            </select>
+        </div>
     </div>
---> 
-    <div class="container" id="container-visitorModal" style=
-    "
-    display:none;
-    position:relative;
-    background-color: white;
-    width: 90%;
-    max-width: 400px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-     ">
-        <div class="vheader" style=
-        "
-        display: flex;
-        justify-content: space-between;
-        font-weight: bold;
-        height: 100%;
-        ">
-        <h3 style=
-        "
-        font-size: 26px;
-        text-align: center;
-        "
-        >Add Visitor</h3>
-        <button id="viewLogsButton" style=
-        "
-        background-color: gray;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        padding: 8px 8px 7px 8px;
-        font-size: 14px;
-        height: 25%;
-        margin: 25px 0 0 0;
-        "
-        class="toggle-view-Back" onclick="window.location.href='/'">x</button>
-        </div>
-        
-        <div class="form-group-horizontal">
-            <label for="visitor-number">Visitor #</label>
-            <input type="text" id="visitor-number" placeholder="Visitor #" value="Visitor 6" readonly>
-        </div>
-        <div class="error-message">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 32" id="error">
-                <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
-            </svg>
-            <span>Visitor # already used</span>
-            <button class="close-error">X</button>
-        </div>
 
-        <div class="form-group">
-            <label for="id-image">I.D. Image</label>
-            <div class="id-image">
-                Press to Capture
-            </div>
-        </div>
-
-        <div class="form-group-vehicle">
-            <div class="form-field">
-                <h3>Vehicle Type</h3>
-                <select id="vehicle-type">
-                    <option value="sedan">Sedan</option>
-                    <option value="suv">SUV</option>
-                    <option value="truck">Truck</option>
-                    <option value="motorcycle">Motorcycle</option>
-                </select>
-            </div>
-            
-            <div class="form-field">
-                <h3>Vehicle Brand</h3>
-                <select id="vehicle-brand">
-                    <option value="toyota">Toyota</option>
-                    <option value="honda">Honda</option>
-                    <option value="ford">Ford</option>
-                    <option value="nissan">Nissan</option>
-                </select>
-            </div>
-        </div>
-
-        <button class="add-visitor-btn" disabled>Add Visitor</button>
+    <style>
+        .add-visitor-btn:hover{
+            background-color: rgb(100,100,100) !important;
+        }
+    </style>
+    <button class="add-visitor-btn" onclick="addVisitor()"style="width: 100%;margin-top: 8px;padding: 10px;background-color: lightgray;border: none;font-size: 16px;border-radius: 8px;color: black;font-weight: bold;cursor: pointer;">Add Visitor</button>
+</div>
+<div id="visitorInfoModal" style="display:none; margin:0; position:fixed; flex-direction: column; top:50%; left:50%; transform: translate(-50%,-50%); padding:20px; max-width: 90%; max-height: 80%; width: 400px; height: auto; border-radius: 8px; background-color: white; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); overflow-y: auto;">
+    <div id="InfoVisitorHeader" class="InfoVisitorHeader" style="justify-content: space-between; align-items: center; display: flex;">
+        <h3 style="margin:0;">Visitor Information</h3>
+        <button onclick="closeVisitorInfoModal()" style="padding: 10px; background-color: gray; color: white; border: none; border-radius: 5px; cursor: pointer;">X</button>  
     </div>
+    <p><strong>Visitor ID: </strong><span id="modal-visitorid"></span></p>
+    <p><strong>Entry Date: </strong><span id="modal-visitorentry"></span></p>
+    <p><strong>Exit Date: </strong><span id="modal-visitorexit"></span></p>
+    <p><strong>Vehicle Brand: </strong><span id="modal-visitorvbrand"></span></p>
+    <p><strong>Vehicle Type: </strong><span id="modal-visitorvtype"></span></p>
+    <p><strong>Visitor ID Image: </strong><span id="modal-visitorimage"></span></p>
+    <div class="form-group" style="margin-bottom: 0 !important;">
+        <div class="id-image" style="height: 200px !important;"></div>
+    </div>
+    <button id="deleteVisitorBtn" onclick="deleteVisitor()" style="padding: 10px; background-color: red; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Delete Visitor</button>    
+</div>
+
+
+<div id="adminLoginModal" style="display: none;position: fixed;width: 300px;top: 50%;left: 50%;transform: translate(-50%,-50%);background-color: white;padding: 20px;border-radius: 8px;box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);flex-direction: column;">
+    <div class="LoginHeader" style="display: flex;position: relative;justify-content: space-between;align-items: center;margin-bottom: 20px;">
+        <h3 style="margin: 0 !important;">Admin Login</h3>
+        <button onclick="closeAdminLoginModal()" style="padding: 10px; background-color: gray; color: white; border: none; border-radius: 5px; cursor: pointer;">X</button>
+    </div>
+    <input type="text" id="username" placeholder="Enter username" required style="width: 280px;padding: 8px;font-size: 14px;border: 2px solid #dadada;border-radius: 8px;margin: 0 0 10px 0;">
+    <input type="password" id="password" placeholder="Enter password" required style="width: 280px;padding: 8px;font-size: 14px;border: 2px solid #dadada;border-radius: 8px;margin: 0 0 10px 0;">
+    <button id="AdminLoginBtn" onclick="adminLogin()" style="width:20%; padding: 10px; background-color: gray; color: white; border: none; border-radius: 5px; cursor: pointer;">Login</button>
+</div>
+
 </body>
 
-
-<script> 
-    function addVehicle() {
-        // Get the values from the form
-        const resident = document.getElementById('resident').value;
-        const licensePlate = document.getElementById('license-plate').value;
-        const vehicleType = document.getElementById('vehicle-type').value;
-        const vehicleBrand = document.getElementById('vehicle-brand').value;
-        const vehicleRfid = document.getElementById('addvehiclerfid').value;
-
-        const residentRef = db.collection('Residents').doc(resident);
-
-        if (!resident || !licensePlate || !vehicleType || !vehicleBrand || !vehicleRfid) {
-            alert("Please fill in all fields.");
-            return; // Exit the function if any field is empty
-        }
-
-        // Validation can be added here if needed
-
-        // Create the vehicle data object
-        const vehicleData = {
-            owner: residentRef,
-            licensePlate: licensePlate,
-            vType: vehicleType,
-            vBrand: vehicleBrand,
-            uid: vehicleRfid,
-            vehicleType: vehicleType,
-            vehicleBrand: vehicleBrand,
-            uid: vehicleRfid,
-            dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
-        };
-
-        // Add the vehicle data to the 'vehicles' collection in Firestore
-        db.collection('Vehicle').add(vehicleData)
-        .then(() => {
-            alert("Vehicle added successfully!");
-            document.getElementById('resident').selectedIndex = 0; // Reset resident dropdown
-            document.getElementById('license-plate').value = '';   // Clear license plate field
-            document.getElementById('vehicle-type').selectedIndex = 0; // Reset vehicle type dropdown
-            document.getElementById('vehicle-brand').selectedIndex = 0; // Reset vehicle brand dropdown
-            document.getElementById('addvehiclerfid').value = '';  // Clear RFID input
-            modalOpen('main');
-        })
-        .catch((error) => {
-            alert("Error adding vehicle: ", error);
-        });
-    }
-</script>
 <script>
-    // Function to search for residents
     function searchResidents() {
-    const searchValue = document.getElementById('searchBar').value.trim().toLowerCase();
-
-    // Ensure search value is not empty
-    if (searchValue === "") {
-        alert("Please enter a search term.");
-        return;
-    }
-
-    const residentsRef = db.collection('Residents');
-
-    // Fetch all residents and perform the search locally
-    residentsRef
+        const searchValue = document.getElementById('searchBar').value.trim().toLowerCase();
+        
+        // Ensure search value is not empty
+        if (searchValue === "") {
+            alert("Please enter a search term.");
+            return;
+        }
+        
+        const residentsRef = db.collection('Residents');
+        
+        // Fetch all residents and perform the search locally
+        residentsRef
         .get()
         .then((querySnapshot) => {
             const residentSelect = document.getElementById('resident');
             
             // Clear previous options
             residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
-
+            
             let found = false;
-
+            
             // Loop through the query results
             querySnapshot.forEach((doc) => {
                 const resident = doc.data();
-
+                
                 // Concatenate the full name fields
                 const fullName = `${resident.firstName.toLowerCase()} ${resident.MiddleName ? resident.MiddleName.toLowerCase() + ' ' : ''}${resident.lastName.toLowerCase()}`;
-
+                
                 // Check if the full name matches the search value (partial matching)
                 if (fullName.startsWith(searchValue)) {
                     found = true;
-
+                    
                     // Add an option for each matching resident
                     const option = document.createElement('option');
                     option.value = doc.id; // Use resident document ID as the value
                     option.textContent = `${resident.firstName} ${resident.MiddleName || ''} ${resident.lastName}`.trim(); // Display full name
-
+                    
                     // Append the option to the select field
                     residentSelect.appendChild(option);
                 }
             });
-
+            
             // Handle case when no residents match
             if (!found) {
                 const noOption = document.createElement('option');
@@ -913,17 +780,12 @@
         .catch((error) => {
             console.error("Error searching residents: ", error);
         });
-}
-</script>
-<script>
-    function addVisitor(){
-        
     }
 </script>
 
 <script type = "text/javascript">
     var xmlHttp = createXmlHttpObject();
-
+    
     function createXmlHttpObject() {
         if(window.XMLHttpRequest) {
             xmlHttp = new XMLHttpRequest();
@@ -932,22 +794,21 @@
         }
         return xmlHttp;
     }
-
-    // handles esp32 response
+    
     function response() {
         var message;
         var currentSensor;
         var xmlResponse;
         var xmldoc;
-
+        
         //get xml stream
         xmlResponse = xmlHttp.responseXML;
-
+        
         if (xmlResponse != null) {
-
+            
             xmldoc = xmlResponse.getElementsByTagName("SD");
             message = xmldoc[0].firstChild.nodeValue;
-
+            
             if (message > 10) {
                 document.getElementById("gate-obstacle").classList.add("green");
                 document.getElementById("gate-obstacle").classList.remove("red");
@@ -961,14 +822,14 @@
                 document.getElementById("info-label-obs").innerHTML = "Blocked";
                 changeSVG(svg_obsClose, "svgGateObstacle", "gate-obstacle");
             }
-
+            
             // document.getElementById("icon-label-obs").innerHTML = message;
-
+            
             xmldoc = xmlResponse.getElementsByTagName("GPOS");
             message = xmldoc[0].firstChild.nodeValue;
-
+            
             console.log(`gateMessage: ` + message);
-
+            
             if (message == "0") {
                 document.getElementById("gate-position").classList.add("green");
                 document.getElementById("gate-position").classList.remove("red");
@@ -976,16 +837,16 @@
                 document.getElementById("icon-label-gate").innerHTML = "Closed";
                 document.getElementById("info-label-gate").innerHTML = "Closed";
                 changeSVG(svg_gateClose, "svgGatePosition", "gate-position");
-
+                
                 xmldoc = xmlResponse.getElementsByTagName("RFID");
-
+                
                 if (xmldoc.length > 0 && xmldoc[0].firstChild != null && xmldoc[0].firstChild.nodeValue != null) {
                     message = xmldoc[0].firstChild.nodeValue;
                     console.log(message);
                     checkRFID(message).then(isFound => {
                         if (isFound) {
                             processGatePosition("1");   
-                             // Wait 3 seconds for the icon-label-obs innerHTML to be 'blocked'
+                            // Wait 3 seconds for the icon-label-obs innerHTML to be 'blocked'
                             setTimeout(() => {
                                 // Check if the innerHTML is 'blocked' after 3 seconds
                                 const element = document.getElementById('icon-label-obs');
@@ -1008,8 +869,8 @@
                     //     processGatePosition("1");
                     // }
                 }
-
-
+                
+                
             } else if (message == "1") {
                 document.getElementById("gate-position").classList.add("red");
                 document.getElementById("gate-position").classList.remove("green");
@@ -1027,7 +888,7 @@
             }
         }
     }
-
+    
     function process(){
         if(xmlHttp.readyState==0 || xmlHttp.readyState==4) {
             xmlHttp.open("PUT","xml",true);
@@ -1036,7 +897,7 @@
         }       
         setTimeout("process()",1000);
     }
-
+    
     function processGatePosition(value, retries = 3) {
         var xhttp = new XMLHttpRequest();
         xhttp.open("PUT", "/gateposition?position=" + value, true);  // Send value as a query parameter
@@ -1055,36 +916,21 @@
         };
         xhttp.send();
     }
-
+    
     function modalOpen(type) {
         const contMain = document.getElementById('container-main');
-        const contAddResident = document.getElementById('container-addresident');
-        const contAddVehicle = document.getElementById('container-addvehicle');
-        const contWaitRFID = document.getElementById('container-waitrfid');
         const contVisitor = document.getElementById('container-visitorModal')
         if (type == 'addResident') {
             contMain.style.display = "none";
-            contAddResident.style.display = "flex";
-            contAddVehicle.style.display = "none";
-            contWaitRFID.style.display = "none";
             contVisitor.style.display = "none";
         } else if (type == 'addVehicle') {
             contMain.style.display = "none";
-            contAddResident.style.display = "none";
-            contAddVehicle.style.display = "flex";
-            contWaitRFID.style.display = "none";
             contVisitor.style.display = "none";
         } else if (type == 'main') {
             contMain.style.display = "flex";
-            contAddResident.style.display = "none";
-            contAddVehicle.style.display = "none";
-            contWaitRFID.style.display = "none";
             contVisitor.style.display = "none";
         } else if (type == 'waitRFID') {
             contMain.style.display = "none";
-            contAddResident.style.display = "none";
-            contAddVehicle.style.display = "none";
-            contWaitRFID.style.display = "flex";
             contVisitor.style.display = "none";
         } else if (type == 'visitorModal') {
             contMain.style.display = "none";
@@ -1092,67 +938,67 @@
         }
         
     }
-
+    
 </script>
 
 
 <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
-            authDomain: "ages-cd6bc.firebaseapp.com",
-            projectId: "ages-cd6bc",
-            storageBucket: "ages-cd6bc.appspot.com",
-            messagingSenderId: "800033951916",
-            appId: "1:800033951916:web:9c97b66c162577998b0f09",
-            measurementId: "G-2F3CSHCZZ7"
-        };
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const database = firebase.database();
-
-        async function fetchReferenceData(ref) {
-            if (!ref) {
-                console.error("Reference is undefined or null.");
-                return {};
-            }
-
-            const doc = await ref.get();
-            return doc.exists ? doc.data() : {};
+    const firebaseConfig = {
+        apiKey: "AIzaSyBtBfdvrpXq1tJSBGMEqziGOj2LFKsvSTQ",
+        authDomain: "ages-cd6bc.firebaseapp.com",
+        projectId: "ages-cd6bc",
+        storageBucket: "ages-cd6bc.appspot.com",
+        messagingSenderId: "800033951916",
+        appId: "1:800033951916:web:9c97b66c162577998b0f09",
+        measurementId: "G-2F3CSHCZZ7"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const database = firebase.database();
+    
+    async function fetchReferenceData(ref) {
+        if (!ref) {
+            console.error("Reference is undefined or null.");
+            return {};
         }
-
-
-        function changeSVG(path, oldsvgId, divId) {
-            const oldsvg = document.getElementById(oldsvgId);
-            oldsvg.innerHTML = path;
+        
+        const doc = await ref.get();
+        return doc.exists ? doc.data() : {};
+    }
+    
+    
+    function changeSVG(path, oldsvgId, divId) {
+        const oldsvg = document.getElementById(oldsvgId);
+        oldsvg.innerHTML = path;
+    }
+    
+    function isLoading(a) {
+        const element = document.getElementById("LastDriverElement");
+        const loader = document.getElementById("LastDriverLoader");
+        if (a === true) {
+            loader.classList.add('flex');
+            loader.classList.remove('hidden');
+            element.classList.add('hidden');
+            element.classList.remove('flex');
+        } else {
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
+            element.classList.add('flex');
+            element.classList.remove('hidden');
         }
-
-        function isLoading(a) {
-            const element = document.getElementById("LastDriverElement");
-            const loader = document.getElementById("LastDriverLoader");
-            if (a === true) {
-                loader.classList.add('flex');
-                loader.classList.remove('hidden');
-                element.classList.add('hidden');
-                element.classList.remove('flex');
-            } else {
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-                element.classList.add('flex');
-                element.classList.remove('hidden');
-            }
-        }
-
-        const svg_gateClose =  `
+    }
+    
+    const svg_gateClose =  `
                 <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
         `;
-        const svg_gateOpen =  `
+    const svg_gateOpen =  `
                 <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/>
         `;
-        const svg_obsClose =  `
+    const svg_obsClose =  `
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                 <path d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708"/>
         `;
-        const svg_obsOpen =  `
+    const svg_obsOpen =  `
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                 <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>        
         `;
@@ -1309,24 +1155,13 @@
 </script>
 
 <script>
+    
     const statusInfo = document.getElementById('status-info');
     const statusIcons = document.getElementById('status-icons');
-    const changeViewButton = document.getElementById('changeViewButton');
     const iconBox  = document.getElementsByClassName('icon-clickable');
     const alertBox = document.getElementById('alert-box');
-    const closeAlertButton = document.getElementById('close-alert');
     let closeAlertTimeOut;
-
-    changeViewButton.addEventListener('click', () => {
-        if (!statusInfo.classList.contains('hidden')) {
-            statusInfo.classList.add('hidden');
-            statusIcons.classList.remove('hidden');
-        } else {
-            statusInfo.classList.remove('hidden');
-            statusIcons.classList.add('hidden');
-        }
-    });
-
+    
     Array.from(iconBox).forEach(element => {
         element.addEventListener('click', () => {
             let gatePositionText = document.getElementById('icon-label-gate').textContent;
@@ -1345,15 +1180,10 @@
             }
         });
     });
-
-    closeAlertButton.addEventListener('click', () => {
-        if (!alertBox.classList.contains('hidden')) {
-            alertBox.classList.add('hidden');
-            clearTimeout(closeAlertTimeOut);
-        }
-    });
+    
 </script>
 <script>
+    
     async function addResident() {
         // Gather input values
         const lastName = document.getElementById('modal-addr-last-name').value;
@@ -1362,12 +1192,12 @@
         const street = document.getElementById('modal-addr-street').value;
         const block = document.getElementById('modal-addr-block').value;
         const lot = document.getElementById('modal-addr-lot').value;
-
+        
         if (!lastName || !firstName || !middleInitial || !street || !block || !lot) {
             alert("Please fill in all fields.");
             return; // Exit the function if any field is empty
         }
-    
+        
         // Create the resident data object
         const residentData = {
             archived: false, // Setting archived to false
@@ -1379,7 +1209,7 @@
             middleName: middleInitial,
             street: street,
         };
-    
+        
         // Add the resident data to the 'Residents' collection in Firestore
         try {
             await db.collection('Residents').add(residentData);
@@ -1400,6 +1230,160 @@
         document.getElementById('modal-addr-block').value = '';
         document.getElementById('modal-addr-lot').value = '';
     }
-    </script>
+</script>
+
+<script>
     
+    async function visitorList() {
+        const visitlist = document.getElementById('visitlist');
+        visitlist.innerHTML = "";
+        
+        try {
+            const querySnapshot = await db.collection("Visitors")
+            .orderBy("entrydate", "desc")
+            .get();
+            
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!data.exitdate) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = data.physical_visitor_id || 'N/A';
+                    listItem.style.cursor = 'pointer';
+                    
+                    listItem.addEventListener('click', () => showVisitorDetails(data));
+                    visitlist.appendChild(listItem);
+                }
+            });
+        } catch (error) {
+            console.error("Error fetching visitor list:", error);
+        }
+    }
+    
+    function showVisitorDetails(data) {
+        const entryDate = data.entrydate ? data.entrydate.toDate().toLocaleString('en-US', { 
+            timeZone: 'Asia/Manila', 
+            dateStyle: 'long', 
+            timeStyle: 'medium' 
+        }) : 'N/A';
+        document.getElementById('modal-visitorid').textContent = data.physical_visitor_id;
+        document.getElementById('modal-visitorentry').textContent = entryDate || 'N/A';
+        document.getElementById('modal-visitorexit').textContent = data.exitdate || 'N/A';
+        document.getElementById('modal-visitorvbrand').textContent = data.vBrand || 'N/A';
+        document.getElementById('modal-visitorvtype').textContent = data.vType || 'N/A';
+        
+        document.getElementById('visitorInfoModal').style.display = 'flex';
+    }
+    
+    function closeVisitorInfoModal() {
+        document.getElementById('visitorInfoModal').style.display = 'none';
+    }
+    
+    visitorList();
+    
+    function addVisitor(){
+        const visitorid = document.getElementById('visitor-number').value;
+        const vehicleType = document.getElementById('vehicle-type').value;
+        const vehicleBrand = document.getElementById('vehicle-brand').value;
+        const idimage = document.getElementById('visitorimage').value;
+        
+        if (!visitorid || !vehicleType || !vehicleBrand) {
+            alert("Please fill in all fields.");
+            return; // Exit the function if any field is empty
+        }
+        
+        const VisitorData = {
+            entrydate: firebase.firestore.FieldValue.serverTimestamp(),
+            personal_id: idimage, 
+            physical_visitor_id: visitorid,
+            vBrand: vehicleBrand,
+            vType: vehicleType
+        }
+        db.collection('Visitors').add(VisitorData)
+        .then(() => {
+            alert("Vehicle added successfully!");
+            document.getElementById('visitor-number').value = '';   // Clear license plate field
+            document.getElementById('vehicle-type').selectedIndex = 0; // Reset vehicle type dropdown
+            document.getElementById('vehicle-brand').selectedIndex = 0; // Reset vehicle brand dropdown
+            modalOpen('main');
+        })
+        .catch((error) => {
+            alert("Error adding vehicle: ", error);
+        });
+        
+    }
+    
+    async function deleteVisitor() {
+        const visitorId = document.getElementById('modal-visitorid').textContent;
+        const exitDate = firebase.firestore.FieldValue.serverTimestamp(); // Set exit date to current timestamp
+        
+        try {
+            // Find the document in Firestore using the visitor ID (assuming physical_visitor_id is the identifier)
+            const querySnapshot = await db.collection("Visitors").where("physical_visitor_id", "==", visitorId).get();
+            
+            querySnapshot.forEach(async (doc) => {
+                await doc.ref.update({ exitdate: exitDate }); // Update the exit date in the document
+                alert("Visitor exited successfully!"); // Notify the user
+                
+                // Close the modal
+                closeVisitorInfoModal();
+                
+                // Refresh the visitor list
+                visitorList();
+            });
+        } catch (error) {
+            console.error("Error deleting visitor:", error);
+            alert("Failed to delete visitor.");
+        }
+    }
+
+</script>
+<script>
+    function openAdminLoginModal() {
+        document.getElementById('adminLoginModal').style.display = 'flex';
+    }
+
+    function closeAdminLoginModal() {
+        document.getElementById('adminLoginModal').style.display = 'none';
+    }
+
+    function checkAdminAccess() {
+    const isAdmin = sessionStorage.getItem('isAdmin');
+
+    if (isAdmin) {
+        // If the user is an admin, show the buttons
+        document.getElementById('manageResidentsButton').style.display = 'inline-block';
+        document.getElementById('manageVehiclesButton').style.display = 'inline-block';
+        document.getElementById('LoginAsAdmin').style.display = 'none'; // Ensure this hides the button
+    } else {
+        document.getElementById('LoginAsAdmin').style.display = 'flex';
+    }
+}
+
+    async function adminLogin() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const querySnapshot = await db.collection("Accounts")
+                .where("username", "==", username)
+                .where("password", "==", password)
+                .get();
+
+            if (!querySnapshot.empty) {
+                sessionStorage.setItem('isAdmin', 'true');
+                closeAdminLoginModal();
+                location.reload();
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error checking admin credentials:", error);
+        }
+    }
+
+    window.onload = function() {
+        checkAdminAccess();
+    };
+</script>
+
 </html>
