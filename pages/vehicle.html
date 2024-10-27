@@ -260,7 +260,7 @@
         
         <div class="search-bar">
             <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
-                <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
+                <input class="dateInput" type="text" id="modalsearchBar" placeholder="Search Resident" />
                 <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
             </div>
         </div>
@@ -315,6 +315,18 @@
     </div>
 </div>
 
+<div class="container modal" id="container-waitrfid" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 10%; width: 100%;">
+            <div class="loader" id="loader" style="height:20px; width: 20px;"></div>
+            <p style="display: flex; align-self: center;">Waiting For RFID...</p>
+        </div>
+
+        <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('addVehicle')">X</button>
+    </div>
+    
+</div>
+
 
 
 
@@ -324,12 +336,19 @@
 function modalOpen(type) {
         const contMain = document.getElementById('container');
         const contAddVehicle = document.getElementById('container-addvehicle');
+        const contWaitRFID = document.getElementById('container-waitrfid');
         if (type == 'addVehicle') {
             contMain.style.display = "none";
             contAddVehicle.style.display = "flex";
+            contWaitRFID.style.display = "none";
         } else if (type == 'main') {
             contMain.style.display = "block";
             contAddVehicle.style.display = "none";
+            contWaitRFID.style.display = "none";
+        } else if (type == 'waitRFID') {
+            contMain.style.display = "none";
+            contAddVehicle.style.display = "none";
+            contWaitRFID.style.display = "flex";
         }
     }
 
@@ -398,7 +417,7 @@ function modalOpen(type) {
         }
     }
 
-    function search() {
+function search() {
     const dropdownValue = document.getElementById('dropdown').value;
     const searchBarValue = document.getElementById('searchBar').value;
     const outputDiv = document.getElementById('output');
@@ -474,8 +493,104 @@ function modalOpen(type) {
         }
     }
 }
+function addVehicle() {
+        // Get the values from the form
+        const resident = document.getElementById('resident').value;
+        const licensePlate = document.getElementById('license-plate').value;
+        const vehicleType = document.getElementById('vehicle-type').value;
+        const vehicleBrand = document.getElementById('vehicle-brand').value;
+        const vehicleRfid = document.getElementById('addvehiclerfid').value;
 
-    function formatTimestamp(timestamp) {
+        const residentRef = db.collection('Residents').doc(resident);
+
+        if (!resident || !licensePlate || !vehicleType || !vehicleBrand || !vehicleRfid) {
+            alert("Please fill in all fields.");
+            return; // Exit the function if any field is empty
+        }
+
+        // Validation can be added here if needed
+
+        // Create the vehicle data object
+        const vehicleData = {
+            owner: residentRef,
+            licensePlate: licensePlate,
+            vType: vehicleType,
+            vBrand: vehicleBrand,
+            uid: vehicleRfid,
+            dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
+        };
+
+        // Add the vehicle data to the 'vehicles' collection in Firestore
+        db.collection('Vehicle').add(vehicleData)
+        .then(() => {
+            alert("Vehicle added successfully!");
+            document.getElementById('resident').selectedIndex = 0; // Reset resident dropdown
+            document.getElementById('license-plate').value = '';   // Clear license plate field
+            document.getElementById('vehicle-type').selectedIndex = 0; // Reset vehicle type dropdown
+            document.getElementById('vehicle-brand').selectedIndex = 0; // Reset vehicle brand dropdown
+            document.getElementById('addvehiclerfid').value = '';  // Clear RFID input
+            modalOpen('main');
+        })
+        .catch((error) => {
+            alert("Error adding vehicle: ", error);
+        });
+    }
+function searchResidents() {
+    const searchValue = document.getElementById('modalsearchBar').value.trim().toLowerCase();
+
+    // Ensure search value is not empty
+    if (searchValue === "") {
+        alert("Please enter a search term.");
+        return;
+    }
+
+    const residentsRef = db.collection('Residents');
+
+    // Fetch all residents and perform the search locally
+    residentsRef
+        .get()
+        .then((querySnapshot) => {
+            const residentSelect = document.getElementById('resident');
+            
+            // Clear previous options
+            residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
+
+            let found = false;
+
+            // Loop through the query results
+            querySnapshot.forEach((doc) => {
+                const resident = doc.data();
+
+                // Concatenate the full name fields
+                const fullName = `${resident.firstName.toLowerCase()} ${resident.MiddleName ? resident.MiddleName.toLowerCase() + ' ' : ''}${resident.lastName.toLowerCase()}`;
+
+                // Check if the full name matches the search value (partial matching)
+                if (fullName.startsWith(searchValue)) {
+                    found = true;
+
+                    // Add an option for each matching resident
+                    const option = document.createElement('option');
+                    option.value = doc.id; // Use resident document ID as the value
+                    option.textContent = `${resident.firstName} ${resident.MiddleName || ''} ${resident.lastName}`.trim(); // Display full name
+
+                    // Append the option to the select field
+                    residentSelect.appendChild(option);
+                }
+            });
+
+            // Handle case when no residents match
+            if (!found) {
+                const noOption = document.createElement('option');
+                noOption.value = "na";
+                noOption.textContent = "No residents found";
+                residentSelect.appendChild(noOption);
+            }
+        })
+        .catch((error) => {
+            console.error("Error searching residents: ", error);
+        });
+}
+function formatTimestamp(timestamp) {
         if (!timestamp) return 'N/A';
         
         const date = timestamp.toDate();
@@ -488,7 +603,99 @@ function modalOpen(type) {
 
         return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
+function response() {
+        var message;
+        var currentSensor;
+        var xmlResponse;
+        var xmldoc;
 
+        //get xml stream
+        xmlResponse = xmlHttp.responseXML;
+
+        if (xmlResponse != null) {
+
+            xmldoc = xmlResponse.getElementsByTagName("SD");
+            message = xmldoc[0].firstChild.nodeValue;
+
+            if (message > 10) {
+                document.getElementById("gate-obstacle").classList.add("green");
+                document.getElementById("gate-obstacle").classList.remove("red");
+                document.getElementById("icon-label-obs").innerHTML = "Clear";
+                document.getElementById("info-label-obs").innerHTML = "Clear";
+                changeSVG(svg_obsOpen, "svgGateObstacle", "gate-obstacle");
+            } else {
+                document.getElementById("gate-obstacle").classList.add("red");
+                document.getElementById("gate-obstacle").classList.remove("green");
+                document.getElementById("icon-label-obs").innerHTML = "Blocked";
+                document.getElementById("info-label-obs").innerHTML = "Blocked";
+                changeSVG(svg_obsClose, "svgGateObstacle", "gate-obstacle");
+            }
+
+            // document.getElementById("icon-label-obs").innerHTML = message;
+
+            xmldoc = xmlResponse.getElementsByTagName("GPOS");
+            message = xmldoc[0].firstChild.nodeValue;
+
+            console.log(`gateMessage: ` + message);
+
+            if (message == "0") {
+                document.getElementById("gate-position").classList.add("green");
+                document.getElementById("gate-position").classList.remove("red");
+                document.getElementById("gate-position").classList.remove("yellow");
+                document.getElementById("icon-label-gate").innerHTML = "Closed";
+                document.getElementById("info-label-gate").innerHTML = "Closed";
+                changeSVG(svg_gateClose, "svgGatePosition", "gate-position");
+
+                xmldoc = xmlResponse.getElementsByTagName("RFID");
+
+                if (xmldoc.length > 0 && xmldoc[0].firstChild != null && xmldoc[0].firstChild.nodeValue != null) {
+                    message = xmldoc[0].firstChild.nodeValue;
+                    console.log(message);
+                    checkRFID(message).then(isFound => {
+                        if (isFound) {
+                            processGatePosition("1");   
+                             // Wait 3 seconds for the icon-label-obs innerHTML to be 'blocked'
+                            setTimeout(() => {
+                                // Check if the innerHTML is 'blocked' after 3 seconds
+                                const element = document.getElementById('icon-label-obs');
+                                if (element && element.innerHTML === "Blocked") {
+                                    // Close the gate after 3 seconds
+                                    processGatePosition("0"); 
+                                } else {
+                                    processGatePosition("0"); 
+                                }
+                            }, 3000);  // 3000 milliseconds = 3 seconds
+                        } else {
+                            if (document.getElementById('container-waitrfid').style.display === 'flex') {
+                                console.log(message);
+                                document.getElementById('addvehiclerfid').value = message;
+                                modalOpen('addVehicle');
+                            }
+                        }
+                    });
+                    // if (message == " 53 49 43 34") {
+                    //     processGatePosition("1");
+                    // }
+                }
+
+
+            } else if (message == "1") {
+                document.getElementById("gate-position").classList.add("red");
+                document.getElementById("gate-position").classList.remove("green");
+                document.getElementById("gate-position").classList.remove("yellow");
+                document.getElementById("icon-label-gate").innerHTML = "Open";
+                document.getElementById("info-label-gate").innerHTML = "Open";
+                changeSVG(svg_gateOpen, "svgGatePosition", "gate-position");
+            } else if (message == "2") {
+                document.getElementById("gate-position").classList.add("yellow");
+                document.getElementById("gate-position").classList.remove("green");
+                document.getElementById("gate-position").classList.remove("red");
+                document.getElementById("icon-label-gate").innerHTML = "Rotating";
+                document.getElementById("info-label-gate").innerHTML = "Rotating";
+                changeSVG(svg_gateOpen, "svgGatePosition", "gate-position");
+            }
+        }
+    }
     // function filterLogs() {
     //     const fromDateValue = document.getElementById('fromDate').value;
     //     const toDateValue = document.getElementById('toDate').value;
