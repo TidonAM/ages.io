@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGES</title>
+    <!---
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+    -->
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         .loader {
@@ -532,7 +534,7 @@
             </div>
         </div>
 
-
+<!---
         <div id="status-info" class="status-info hidden">
             <div class="info-row-top">
                 <div class="info-label">Gate Status</div>
@@ -557,7 +559,7 @@
                 <div id="info-label-rfid" class="info-value">Online</div>
             </div>
         </div>
-
+    -->
         <div id="status-icons" class="status-icons">
             <!-- <div id="gate-connection" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-door-closed-fill" viewBox="0 0 16 16">
@@ -578,7 +580,7 @@
                 </svg>
                 <div id="icon-label-obs" class="icon-label-obs">Blocked</div>
             </div>
-            <div id="gate-visitor" class="icon-box green" onclick="window.location.href='pages/Add Visitor.html'">
+            <div id="gate-visitor" class="icon-box green" onclick="modalOpen('visitorModal')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 20">
                     <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                     <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
@@ -618,7 +620,7 @@
             </div> -->
         </div>
     </div>
-
+<!--
     <div class="container modal resident" id="container-addresident" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Add Resident</h2>
@@ -662,15 +664,15 @@
         </div>
         
     </div>
-    
-
+-->
+<!--
     <div class="container modal vehicle" id="container-addvehicle" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Add Vehicle</h2>
             <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
         </div>
         <div class="search-bar">
-            <!-- From Date Section -->
+            // From Date Section
             <div class="date-container" style="align-items: center; display: flex; gap: 10px;">
                 <input class="dateInput" type="text" id="searchBar" placeholder="Search Resident" />
                 <button class="toggle-view" onclick="searchResidents()" style="margin-bottom: 0px !important; height: 100%;">Search</button>
@@ -722,8 +724,91 @@
         <button id="addVehicle" class="toggle-view" onclick="addVehicle()">Add Vehicle</button>
 
     </div>
-    
+--> 
+    <div class="container" id="container-visitorModal" style=
+    "
+    display:none;
+    position:relative;
+    background-color: white;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+     ">
+        <div class="vheader" style=
+        "
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        height: 100%;
+        ">
+        <h3 style=
+        "
+        font-size: 26px;
+        text-align: center;
+        "
+        >Add Visitor</h3>
+        <button id="viewLogsButton" style=
+        "
+        background-color: gray;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 8px 8px 7px 8px;
+        font-size: 14px;
+        height: 25%;
+        margin: 25px 0 0 0;
+        "
+        class="toggle-view-Back" onclick="window.location.href='/'">x</button>
+        </div>
+        
+        <div class="form-group-horizontal">
+            <label for="visitor-number">Visitor #</label>
+            <input type="text" id="visitor-number" placeholder="Visitor #" value="Visitor 6" readonly>
+        </div>
+        <div class="error-message">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 32 32" id="error">
+                <path fill="red" d="M16 32c8.836 0 16-7.164 16-16S24.836 0 16 0 0 7.164 0 16s7.164 16 16 16zm2-14a2 2 0 0 1-4 0V8a2 2 0 0 1 4 0v10zm-2 3.968a2 2 0 1 1-.001 4.001A2 2 0 0 1 16 21.968z"></path>
+            </svg>
+            <span>Visitor # already used</span>
+            <button class="close-error">X</button>
+        </div>
+
+        <div class="form-group">
+            <label for="id-image">I.D. Image</label>
+            <div class="id-image">
+                Press to Capture
+            </div>
+        </div>
+
+        <div class="form-group-vehicle">
+            <div class="form-field">
+                <h3>Vehicle Type</h3>
+                <select id="vehicle-type">
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="truck">Truck</option>
+                    <option value="motorcycle">Motorcycle</option>
+                </select>
+            </div>
+            
+            <div class="form-field">
+                <h3>Vehicle Brand</h3>
+                <select id="vehicle-brand">
+                    <option value="toyota">Toyota</option>
+                    <option value="honda">Honda</option>
+                    <option value="ford">Ford</option>
+                    <option value="nissan">Nissan</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="add-visitor-btn" disabled>Add Visitor</button>
+    </div>
 </body>
+
 
 <script> 
     function addVehicle() {
@@ -772,7 +857,6 @@
         });
     }
 </script>
-
 <script>
     // Function to search for residents
     function searchResidents() {
@@ -830,10 +914,12 @@
             console.error("Error searching residents: ", error);
         });
 }
-
-
 </script>
-
+<script>
+    function addVisitor(){
+        
+    }
+</script>
 
 <script type = "text/javascript">
     var xmlHttp = createXmlHttpObject();
@@ -975,27 +1061,36 @@
         const contAddResident = document.getElementById('container-addresident');
         const contAddVehicle = document.getElementById('container-addvehicle');
         const contWaitRFID = document.getElementById('container-waitrfid');
+        const contVisitor = document.getElementById('container-visitorModal')
         if (type == 'addResident') {
             contMain.style.display = "none";
             contAddResident.style.display = "flex";
             contAddVehicle.style.display = "none";
             contWaitRFID.style.display = "none";
+            contVisitor.style.display = "none";
         } else if (type == 'addVehicle') {
             contMain.style.display = "none";
             contAddResident.style.display = "none";
             contAddVehicle.style.display = "flex";
             contWaitRFID.style.display = "none";
+            contVisitor.style.display = "none";
         } else if (type == 'main') {
             contMain.style.display = "flex";
             contAddResident.style.display = "none";
             contAddVehicle.style.display = "none";
             contWaitRFID.style.display = "none";
+            contVisitor.style.display = "none";
         } else if (type == 'waitRFID') {
             contMain.style.display = "none";
             contAddResident.style.display = "none";
             contAddVehicle.style.display = "none";
             contWaitRFID.style.display = "flex";
+            contVisitor.style.display = "none";
+        } else if (type == 'visitorModal') {
+            contMain.style.display = "none";
+            contVisitor.style.display = "flex";
         }
+        
     }
 
 </script>
