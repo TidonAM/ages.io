@@ -425,23 +425,6 @@
     </style>
 </head>
 <body onload="process()">
-    <!-- Navbar -->
-    <!--
-    <div class="navbar">
-        <button class="burger">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-            </svg>
-        </button>
-        <div class="navbar-title">AGES</div>
-        <button class="profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-            </svg>
-        </button>
-    </div>
-    -->
     <!-- Main Container -->
     <div class="container main" id="container-main">
         
@@ -658,7 +641,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <label for="rfid">RFID Tag:</label>
             <button class="toggle-view" onclick="modalOpen('waitRFID')" style="margin-bottom: 0px !important; height: 100%;">Scan Now</button>
-            <input id="addvehiclerfid" type="text" style="display: none;">
+            <input id="addvehiclerfid" type="text">
         </div>
         <div class="vehicle-row" style="margin-bottom: 10px;">
             <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
@@ -712,10 +695,10 @@
 
         // Create the vehicle data object
         const vehicleData = {
-            resident: residentRef,
+            owner: residentRef,
             licensePlate: licensePlate,
-            vehicleType: vehicleType,
-            vehicleBrand: vehicleBrand,
+            vType: vehicleType,
+            vBrand: vehicleBrand,
             uid: vehicleRfid,
             dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
         };
@@ -842,13 +825,6 @@
 
             // document.getElementById("icon-label-obs").innerHTML = message;
 
-            xmldoc = xmlResponse.getElementsByTagName("T");
-            message = xmldoc[0].firstChild.nodeValue;
-
-            document.getElementById("icon-label-temp").innerHTML = message+"°C";
-            document.getElementById("info-label-temp").innerHTML = message+"°C";
-            document.getElementById("board-temp");
-
             xmldoc = xmlResponse.getElementsByTagName("GPOS");
             message = xmldoc[0].firstChild.nodeValue;
 
@@ -883,7 +859,8 @@
                             }, 3000);  // 3000 milliseconds = 3 seconds
                         } else {
                             if (document.getElementById('container-waitrfid').style.display === 'flex') {
-                                document.getElementById('addvehiclerfid').value == message;
+                                console.log(message);
+                                document.getElementById('addvehiclerfid').value = message;
                                 modalOpen('addVehicle');
                             }
                         }
@@ -921,9 +898,22 @@
         setTimeout("process()",1000);
     }
 
-    function processGatePosition(value) {
+    function processGatePosition(value, retries = 3) {
         var xhttp = new XMLHttpRequest();
         xhttp.open("PUT", "/gateposition?position=" + value, true);  // Send value as a query parameter
+        xhttp.onload = function() {
+            if (xhttp.status >= 200 && xhttp.status < 300) {
+                console.log('Success:', xhttp.responseText);
+            } else {
+                console.error('Error:', xhttp.statusText);
+                if (retries > 0) {
+                    console.log(`Retrying... Attempts left: ${retries}`);
+                    processGatePosition(value, retries - 1); // Retry the request
+                } else {
+                    console.error('Max retries reached. Request failed.');
+                }
+            }
+        };
         xhttp.send();
     }
 
@@ -973,9 +963,15 @@
         const database = firebase.database();
 
         async function fetchReferenceData(ref) {
+            if (!ref) {
+                console.error("Reference is undefined or null.");
+                return {};
+            }
+
             const doc = await ref.get();
             return doc.exists ? doc.data() : {};
         }
+
 
         function changeSVG(path, oldsvgId, divId) {
             const oldsvg = document.getElementById(oldsvgId);
@@ -1038,9 +1034,17 @@
                 const doc = querySnapshot.docs[0];  // Get the first document
                 const data = doc.data();
 
-                // Fetch vehicle and resident data
+                // Fetch vehicle data
                 const vehicleData = await fetchReferenceData(data.vehicle);
+                if (!vehicleData) {
+                    throw new Error("Vehicle data not found.");
+                }
+
+                // Fetch resident data
                 const residentData = await fetchReferenceData(vehicleData.owner);
+                if (!residentData) {
+                    throw new Error("Resident data not found.");
+                }
 
                 let accessStatus = data.entry ? 'Entry' : 'Exit';
 
@@ -1105,10 +1109,10 @@
                         console.log(data.licensePlate);
 
                         // Save to the History collection with the vehicle reference
-                        const vehicleRefPath = vehicleRef.doc(doc.id).path; // Get the reference path
+                        const vehicleRefDoc = vehicleRef.doc(doc.id); // Get the reference path
 
                         const historyQuerySnapshot = await db.collection("History")
-                        .where("vehicle", "==", vehicleRefPath)
+                        .where("vehicle", "==", vehicleRefDoc)
                         .orderBy("datetime", "desc") // Get the most recent entry first
                         .limit(1) // Limit to one document
                         .get();
@@ -1123,9 +1127,11 @@
 
                         // Only save to History if the last entry is false or if there's no previous entry
                         if (lastEntryType === false || lastEntryType === null) {
-                            await saveToHistory(vehicleRefPath, true, true); // Save with the entry set to true
+                            await saveToHistory(vehicleRefDoc, true, true); // Save with the entry set to true
+                            console.log("Last history is exit, saving as entry");
                         } else {
-                            console.log("Last entry is true, not saving to History.");
+                            await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
+                            console.log("Last history is entry, saving as exit");
                         }
                     });
                     return true;

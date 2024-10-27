@@ -237,7 +237,9 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
         const outputDiv = document.getElementById('output');
         outputDiv.innerHTML = isLoading(true);
 
-        const querySnapshot = await db.collection("History").get();
+        const querySnapshot = await db.collection("History")
+        .orderBy("datetime", "desc")  // Sort by datetime in descending order
+        .get();
 
         outputDiv.innerHTML = isLoading(false);
 
@@ -295,6 +297,7 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
             db.collection("History")
                 .where("datetime", ">=", fromTimestamp)
                 .where("datetime", "<=", toTimestamp)
+                .orderBy("datetime", "desc") 
                 .get()
                 .then((querySnapshot) => {
                     outputDiv.innerHTML = isLoading(false);
@@ -330,6 +333,7 @@ const char PAGE_LOGS[] PROGMEM = R"=====(
 
 </body>
 </html>
+
 
 
 

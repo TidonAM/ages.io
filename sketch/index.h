@@ -19,7 +19,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             height: 120px;
             animation: spin 2s linear infinite;
             }
-
             @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -179,7 +178,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .toggle-view{
             background-color: lightgray;
             border: none;
-            padding: 5px;
+            padding: 10px;
             font: inherit;
             border-radius: 10px;
         }
@@ -247,14 +246,15 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            /* margin: 5px 0; */
+            align-items: center;
             padding: 10px;
         }
 
         .info-row2 {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            /* margin: 5px 0; */
             padding: 10px;
             background-color: lightgray;
         }
@@ -269,7 +269,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .info-row3{
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            /* margin: 5px 0; */
             padding: 10px;
             background-color: lightgray;
         }
@@ -284,7 +284,8 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
         .status-icons {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            gap:10px;
             /* gap: 10px; */
             /* margin-bottom: 15px; */
         }
@@ -302,7 +303,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .icon-box.green {
             background-color: #ccffcc;
             height: 80px;
-            width: 80px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -340,7 +341,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .icon-box.red {
             background-color: #ffcccc;
             height: 80px;
-            width: 80px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -364,7 +365,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .icon-box.yellow {
             background-color: #ffffcc;
             height: 80px;
-            width: 80px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -404,7 +405,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         .driver-info .info-row {
             display: flex;
             justify-content: space-between;
-            margin: 5px 0;
+            /* margin: 5px 0; */
         }
 
         #progress-container {
@@ -426,23 +427,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     </style>
 </head>
 <body onload="process()">
-    <!-- Navbar -->
-    <!--
-    <div class="navbar">
-        <button class="burger">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-            </svg>
-        </button>
-        <div class="navbar-title">AGES</div>
-        <button class="profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-            </svg>
-        </button>
-    </div>
-    -->
     <!-- Main Container -->
     <div class="container main" id="container-main">
         
@@ -507,7 +491,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <button id="addVehicle" style="width: 48%;" class="toggle-view" onclick="modalOpen('addVehicle')">Add Vehicle</button>
         </div>
 
-        <button id="changeViewButton" class="toggle-view">Change View</button>
+        <button id="changeViewButton" class="toggle-view" style="display: none;">Change View</button>
 
         <div id="status-info" class="status-info hidden">
             <div class="info-row-top">
@@ -560,7 +544,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 </svg>
                 <div class="icon-label-camol">Offline</div>
             </div> -->
-            <div id="board-temp" class="icon-box green">
+            <!-- <div id="board-temp" class="icon-box green">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
                     <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
                     <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1"/>
@@ -572,7 +556,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                     <path d="M62.19,48.52a9.83,9.83,0,0,0-.25-19.61h-1a9.83,9.83,0,0,0,0,19.63h1.25ZM24.53,91q6,0,9.29,2.7a8.86,8.86,0,0,1,3.24,7.16q0,5.11-3.17,7.7c-2.11,1.72-5.19,2.58-9.22,2.58l-1.08.56H18.42V122H7.72V91Zm-1.88,13.52a4.41,4.41,0,0,0,2.6-.63,3.27,3.27,0,0,0,0-4.44,4.26,4.26,0,0,0-2.6-.66H18.42v5.73Zm6.47,2.3L38.79,122H26.92l-7.23-13.56,9.43-1.6Zm37.37-7.79H51.75v4.32H63.67v8H51.75V122H40.81V91H66.49v8Zm14.08-8v31H69.63V91Zm19.9,0q7.27,0,11,4t3.71,11.45q0,7.36-3.71,11.43t-11,4.06H85.26V91Zm-1.55,23.19c2,0,3.38-.62,4.06-1.86a12.78,12.78,0,0,0,1-5.84,12.78,12.78,0,0,0-1-5.84c-.68-1.24-2-1.86-4.06-1.86H96.19v15.4ZM41.57,21.77a4.5,4.5,0,0,0-.51-6.2l-.29-.23a4.4,4.4,0,0,0-3.14-.86,4.45,4.45,0,0,0-2.9,1.5,1.79,1.79,0,0,0-.22.25,41.63,41.63,0,0,0-6.45,10.92A31.56,31.56,0,0,0,28,50.43a40.44,40.44,0,0,0,6.49,10.93,4.49,4.49,0,0,0,6.31.65h0a4.5,4.5,0,0,0,.65-6.32h0a31.57,31.57,0,0,1-5-8.36,22.93,22.93,0,0,1-1.65-8.51,23.32,23.32,0,0,1,1.71-8.56,32.39,32.39,0,0,1,5.08-8.49ZM22.4,7.54a1.37,1.37,0,0,0,.19-.23,4.45,4.45,0,0,0-.43-6.1,1.37,1.37,0,0,0-.22-.2,4.48,4.48,0,0,0-6.18.5A67.93,67.93,0,0,0,3.84,19.91,46.8,46.8,0,0,0,0,39,46.8,46.8,0,0,0,4.47,58,68.05,68.05,0,0,0,17,76.05l.11.11a4.48,4.48,0,0,0,6.23.08l.11-.1a4.56,4.56,0,0,0,1.31-3,4.48,4.48,0,0,0-1.22-3.21A59.49,59.49,0,0,1,12.72,54.48,38.08,38.08,0,0,1,9,38.89a38.45,38.45,0,0,1,3.23-15.72A59,59,0,0,1,22.4,7.54ZM81.31,21.77a4.5,4.5,0,0,1,.51-6.2l.28-.23a4.49,4.49,0,0,1,6.05.64,1.27,1.27,0,0,1,.21.25,41.4,41.4,0,0,1,6.46,10.92,31.56,31.56,0,0,1,.07,23.28A40.44,40.44,0,0,1,88.4,61.36a4.49,4.49,0,0,1-6.31.65h0a4.48,4.48,0,0,1-1.63-3,4.55,4.55,0,0,1,1-3.3h0a31.57,31.57,0,0,0,5-8.36,22.93,22.93,0,0,0,1.65-8.51,23.32,23.32,0,0,0-1.71-8.56,32.39,32.39,0,0,0-5.08-8.49ZM100.48,7.54a1.37,1.37,0,0,1-.19-.23,4.45,4.45,0,0,1,.43-6.1,1.37,1.37,0,0,1,.22-.2,4.48,4.48,0,0,1,6.18.5A67.93,67.93,0,0,1,119,19.91,46.8,46.8,0,0,1,122.87,39a46.8,46.8,0,0,1-4.46,19,68.05,68.05,0,0,1-12.52,18l-.11.11a4.48,4.48,0,0,1-6.23.08l-.11-.1a4.56,4.56,0,0,1-1.31-3,4.48,4.48,0,0,1,1.22-3.21,59.49,59.49,0,0,0,10.81-15.42,38.08,38.08,0,0,0,3.76-15.59,38.45,38.45,0,0,0-3.23-15.72A59,59,0,0,0,100.48,7.54Z"/>
                 </svg>
                 <div class="icon-label-scanner">Online</div>
-            </div>
+            </div> -->
             <!-- <div id="board-signal" class="icon-box yellow">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bar-chart-fill" viewBox="0 0 16 16">
                     <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
@@ -591,7 +575,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <div class="container modal resident" id="container-addresident" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Add Resident</h2>
-            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
         </div>
         <div class="info-row">
             <label for="modal-addr-last-name">Last name:</label>
@@ -617,13 +601,26 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             <label for="modal-addr-lot">Lot:</label>
             <input type="text" id="modal-addr-lot" class="info"></input>
         </div>
-        <button id="viewLogsButton" class="toggle-view" onclick="window.location.href='/logs.html'">Add Resident</button>
+        <button id="viewLogsButton" class="toggle-view" onclick="addResident()" style="margin-top: 10px;">Add Resident</button>
     </div>
+
+    <div class="container modal" id="container-waitrfid" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 10%; width: 100%;">
+                <div class="loader" id="loader" style="height:20px; width: 20px;"></div>
+                <p style="display: flex; align-self: center;">Waiting For RFID...</p>
+            </div>
+
+            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('addVehicle')">X</button>
+        </div>
+        
+    </div>
+    
 
     <div class="container modal vehicle" id="container-addvehicle" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Add Vehicle</h2>
-            <button class="toggle-view" style="height: 30px; width: 30px;" onclick="modalOpen('main')">X</button>
+            <button class="toggle-view" style="height: 40px; width: 40px;" onclick="modalOpen('main')">X</button>
         </div>
         <div class="search-bar">
             <!-- From Date Section -->
@@ -639,9 +636,14 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
             </select>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label for="resident">License Plate:</label>
-            <input type="text" style="padding: 10px; width: 200px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
+            <label for="license-plate">License Plate:</label>
+            <input id="license-plate" type="text" style="padding: 10px; width: 200px;font-size: 16px; border: 1px solid #ccc; border-radius: 5px;margin-bottom: 10px;">
             </input>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label for="rfid">RFID Tag:</label>
+            <button class="toggle-view" onclick="modalOpen('waitRFID')" style="margin-bottom: 0px !important; height: 100%;">Scan Now</button>
+            <input id="addvehiclerfid" type="text">
         </div>
         <div class="vehicle-row" style="margin-bottom: 10px;">
             <div class="info"  style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
@@ -679,18 +681,27 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     function addVehicle() {
         // Get the values from the form
         const resident = document.getElementById('resident').value;
-        const licensePlate = document.querySelector('input[type="text"]').value;
+        const licensePlate = document.getElementById('license-plate').value;
         const vehicleType = document.getElementById('vehicle-type').value;
         const vehicleBrand = document.getElementById('vehicle-brand').value;
+        const vehicleRfid = document.getElementById('addvehiclerfid').value;
+
+        const residentRef = db.collection('Residents').doc(resident);
+
+        if (!resident || !licensePlate || !vehicleType || !vehicleBrand || !vehicleRfid) {
+            alert("Please fill in all fields.");
+            return; // Exit the function if any field is empty
+        }
 
         // Validation can be added here if needed
 
         // Create the vehicle data object
         const vehicleData = {
-            resident: resident,
+            owner: residentRef,
             licensePlate: licensePlate,
-            vehicleType: vehicleType,
-            vehicleBrand: vehicleBrand,
+            vType: vehicleType,
+            vBrand: vehicleBrand,
+            uid: vehicleRfid,
             dateAdded: firebase.firestore.FieldValue.serverTimestamp() // To store the current timestamp
         };
 
@@ -698,51 +709,78 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         db.collection('Vehicle').add(vehicleData)
         .then(() => {
             alert("Vehicle added successfully!");
-            // Optionally, close the modal or reset form fields
-            modalOpen('main'); // Example of closing the modal
+            document.getElementById('resident').selectedIndex = 0; // Reset resident dropdown
+            document.getElementById('license-plate').value = '';   // Clear license plate field
+            document.getElementById('vehicle-type').selectedIndex = 0; // Reset vehicle type dropdown
+            document.getElementById('vehicle-brand').selectedIndex = 0; // Reset vehicle brand dropdown
+            document.getElementById('addvehiclerfid').value = '';  // Clear RFID input
+            modalOpen('main');
         })
         .catch((error) => {
-            console.error("Error adding vehicle: ", error);
+            alert("Error adding vehicle: ", error);
         });
-        window.location.href='/'
     }
 </script>
 
 <script>
     // Function to search for residents
     function searchResidents() {
-        const searchValue = document.getElementById('searchBar').value;
-        const residentsRef = db.collection('Residents');
+    const searchValue = document.getElementById('searchBar').value.trim().toLowerCase();
 
-        residentsRef
-            .orderBy('name') // Assuming you have a 'name' field in the Resident documents
-            .startAt(searchValue) // Queries all residents >= searchValue
-            .endAt(searchValue + "\uf8ff") // Queries all residents <= searchValue (handles prefix matching)
-            .get()
-            .then((querySnapshot) => {
-                // Get the select element
-                const residentSelect = document.getElementById('resident');
+    // Ensure search value is not empty
+    if (searchValue === "") {
+        alert("Please enter a search term.");
+        return;
+    }
 
-                // Clear previous options
-                residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
+    const residentsRef = db.collection('Residents');
 
-                // Loop through the query results
-                querySnapshot.forEach((doc) => {
-                    const resident = doc.data();
-                    
-                    // Add an option for each resident found
+    // Fetch all residents and perform the search locally
+    residentsRef
+        .get()
+        .then((querySnapshot) => {
+            const residentSelect = document.getElementById('resident');
+            
+            // Clear previous options
+            residentSelect.innerHTML = '<option value="na" disabled selected>Search Resident First</option>';
+
+            let found = false;
+
+            // Loop through the query results
+            querySnapshot.forEach((doc) => {
+                const resident = doc.data();
+
+                // Concatenate the full name fields
+                const fullName = `${resident.firstName.toLowerCase()} ${resident.MiddleName ? resident.MiddleName.toLowerCase() + ' ' : ''}${resident.lastName.toLowerCase()}`;
+
+                // Check if the full name matches the search value (partial matching)
+                if (fullName.startsWith(searchValue)) {
+                    found = true;
+
+                    // Add an option for each matching resident
                     const option = document.createElement('option');
                     option.value = doc.id; // Use resident document ID as the value
-                    option.textContent = resident.name; // Display resident name
+                    option.textContent = `${resident.firstName} ${resident.MiddleName || ''} ${resident.lastName}`.trim(); // Display full name
 
                     // Append the option to the select field
                     residentSelect.appendChild(option);
-                });
-            })
-            .catch((error) => {
-                console.error("Error searching residents: ", error);
+                }
             });
-    }
+
+            // Handle case when no residents match
+            if (!found) {
+                const noOption = document.createElement('option');
+                noOption.value = "na";
+                noOption.textContent = "No residents found";
+                residentSelect.appendChild(noOption);
+            }
+        })
+        .catch((error) => {
+            console.error("Error searching residents: ", error);
+        });
+}
+
+
 </script>
 
 
@@ -789,13 +827,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
 
             // document.getElementById("icon-label-obs").innerHTML = message;
 
-            xmldoc = xmlResponse.getElementsByTagName("T");
-            message = xmldoc[0].firstChild.nodeValue;
-
-            document.getElementById("icon-label-temp").innerHTML = message+"°C";
-            document.getElementById("info-label-temp").innerHTML = message+"°C";
-            document.getElementById("board-temp");
-
             xmldoc = xmlResponse.getElementsByTagName("GPOS");
             message = xmldoc[0].firstChild.nodeValue;
 
@@ -828,9 +859,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                                     processGatePosition("0"); 
                                 }
                             }, 3000);  // 3000 milliseconds = 3 seconds
-
                         } else {
-                            console.log("RFID UID is not in the database.");
+                            if (document.getElementById('container-waitrfid').style.display === 'flex') {
+                                console.log(message);
+                                document.getElementById('addvehiclerfid').value = message;
+                                modalOpen('addVehicle');
+                            }
                         }
                     });
                     // if (message == " 53 49 43 34") {
@@ -866,9 +900,22 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         setTimeout("process()",1000);
     }
 
-    function processGatePosition(value) {
+    function processGatePosition(value, retries = 3) {
         var xhttp = new XMLHttpRequest();
         xhttp.open("PUT", "/gateposition?position=" + value, true);  // Send value as a query parameter
+        xhttp.onload = function() {
+            if (xhttp.status >= 200 && xhttp.status < 300) {
+                console.log('Success:', xhttp.responseText);
+            } else {
+                console.error('Error:', xhttp.statusText);
+                if (retries > 0) {
+                    console.log(`Retrying... Attempts left: ${retries}`);
+                    processGatePosition(value, retries - 1); // Retry the request
+                } else {
+                    console.error('Max retries reached. Request failed.');
+                }
+            }
+        };
         xhttp.send();
     }
 
@@ -876,18 +923,27 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         const contMain = document.getElementById('container-main');
         const contAddResident = document.getElementById('container-addresident');
         const contAddVehicle = document.getElementById('container-addvehicle');
+        const contWaitRFID = document.getElementById('container-waitrfid');
         if (type == 'addResident') {
             contMain.style.display = "none";
             contAddResident.style.display = "flex";
             contAddVehicle.style.display = "none";
+            contWaitRFID.style.display = "none";
         } else if (type == 'addVehicle') {
             contMain.style.display = "none";
             contAddResident.style.display = "none";
             contAddVehicle.style.display = "flex";
+            contWaitRFID.style.display = "none";
         } else if (type == 'main') {
             contMain.style.display = "flex";
             contAddResident.style.display = "none";
             contAddVehicle.style.display = "none";
+            contWaitRFID.style.display = "none";
+        } else if (type == 'waitRFID') {
+            contMain.style.display = "none";
+            contAddResident.style.display = "none";
+            contAddVehicle.style.display = "none";
+            contWaitRFID.style.display = "flex";
         }
     }
 
@@ -909,9 +965,15 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         const database = firebase.database();
 
         async function fetchReferenceData(ref) {
+            if (!ref) {
+                console.error("Reference is undefined or null.");
+                return {};
+            }
+
             const doc = await ref.get();
             return doc.exists ? doc.data() : {};
         }
+
 
         function changeSVG(path, oldsvgId, divId) {
             const oldsvg = document.getElementById(oldsvgId);
@@ -974,9 +1036,17 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                 const doc = querySnapshot.docs[0];  // Get the first document
                 const data = doc.data();
 
-                // Fetch vehicle and resident data
+                // Fetch vehicle data
                 const vehicleData = await fetchReferenceData(data.vehicle);
+                if (!vehicleData) {
+                    throw new Error("Vehicle data not found.");
+                }
+
+                // Fetch resident data
                 const residentData = await fetchReferenceData(vehicleData.owner);
+                if (!residentData) {
+                    throw new Error("Resident data not found.");
+                }
 
                 let accessStatus = data.entry ? 'Entry' : 'Exit';
 
@@ -1031,6 +1101,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                     querySnapshot.forEach(async (doc) => {
                         const data = doc.data();
                         const residentData = await fetchReferenceData(data.owner);
+
                         const lastname = residentData.lastName || 'N/A';  // Assuming the field is 'lastname'
                         const firstname = residentData.firstName || 'N/A';  // Assuming the field is 'firstname'
                         const today = new Date();
@@ -1039,13 +1110,53 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
                         const street = residentData.street || 'N/A';  // Assuming the field is 'street'
                         console.log(data.licensePlate);
 
-                        // Call getDriverDetails with the retrieved data
-                        getDriverDetails(lastname, firstname, datetime, plate, street);
+                        // Save to the History collection with the vehicle reference
+                        const vehicleRefDoc = vehicleRef.doc(doc.id); // Get the reference path
+
+                        const historyQuerySnapshot = await db.collection("History")
+                        .where("vehicle", "==", vehicleRefDoc)
+                        .orderBy("datetime", "desc") // Get the most recent entry first
+                        .limit(1) // Limit to one document
+                        .get();
+
+                        let lastEntryType = null;
+
+                        // Check if there's any previous history for the vehicle
+                        if (!historyQuerySnapshot.empty) {
+                            const lastHistoryDoc = historyQuerySnapshot.docs[0];
+                            lastEntryType = lastHistoryDoc.data().entry;  // Get the entry type of the last history record
+                        }
+
+                        // Only save to History if the last entry is false or if there's no previous entry
+                        if (lastEntryType === false || lastEntryType === null) {
+                            await saveToHistory(vehicleRefDoc, true, true); // Save with the entry set to true
+                            console.log("Last history is exit, saving as entry");
+                        } else {
+                            await saveToHistory(vehicleRefDoc, true, false); // Save with the entry set to true
+                            console.log("Last history is entry, saving as exit");
+                        }
                     });
                     return true;
                 }
             } catch (error) {
                 console.error("Error checking RFID in database:", error);
+            }
+        }
+        async function saveToHistory(vehicleRef, isResident, entry) {
+            const historyRef = db.collection("History");
+
+            const historyData = {
+                datetime: new Date(),  // Set to the current date and time
+                entry: entry,          // Set to true or false based on your application logic
+                isResident: isResident, // True if the person is a resident, else false
+                vehicle: vehicleRef    // Reference to the vehicle
+            };
+
+            try {
+                await historyRef.add(historyData);
+                console.log("History record added successfully:", historyData);
+            } catch (error) {
+                console.error("Error saving to History collection:", error);
             }
         }
 </script>
@@ -1110,7 +1221,55 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         }
     });
 </script>
+<script>
+    async function addResident() {
+        // Gather input values
+        const lastName = document.getElementById('modal-addr-last-name').value;
+        const firstName = document.getElementById('modal-addr-first-name').value;
+        const middleInitial = document.getElementById('modal-addr-middle-initial').value;
+        const street = document.getElementById('modal-addr-street').value;
+        const block = document.getElementById('modal-addr-block').value;
+        const lot = document.getElementById('modal-addr-lot').value;
 
+        if (!lastName || !firstName || !middleInitial || !street || !block || !lot) {
+            alert("Please fill in all fields.");
+            return; // Exit the function if any field is empty
+        }
+    
+        // Create the resident data object
+        const residentData = {
+            archived: false, // Setting archived to false
+            block: block,
+            datetimeAdded: new Date(), // Current date and time as timestamp
+            firstName: firstName,
+            lastName: lastName,
+            lot: lot,
+            middleName: middleInitial,
+            street: street,
+        };
+    
+        // Add the resident data to the 'Residents' collection in Firestore
+        try {
+            await db.collection('Residents').add(residentData);
+            alert("Resident added successfully!");
+            // Optionally, reset the input fields
+            resetForm();
+        } catch (error) {
+            console.error("Error adding resident: ", error);
+            alert("Error adding resident: " + error.message);
+        }
+    }
+    
+    function resetForm() {
+        document.getElementById('modal-addr-last-name').value = '';
+        document.getElementById('modal-addr-first-name').value = '';
+        document.getElementById('modal-addr-middle-initial').value = '';
+        document.getElementById('modal-addr-street').value = '';
+        document.getElementById('modal-addr-block').value = '';
+        document.getElementById('modal-addr-lot').value = '';
+    }
+    </script>
+    
 </html>
 
 
